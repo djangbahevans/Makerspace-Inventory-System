@@ -2,7 +2,6 @@ import { Badge, Button, Grid, Paper, Table, TableBody, TableCell, TableHead, Tab
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
 import { withStyles } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
 import React from 'react';
 import createRequisition from '../helpers/createRequisition';
 import createStock from '../helpers/createStock';
@@ -94,7 +93,7 @@ class DashboardPage extends React.Component {
                                                     <TableCell>{row.name}</TableCell>
                                                     <TableCell>{row.role}</TableCell>
                                                     <TableCell>{row.item}</TableCell>
-                                                    <TableCell>{row.date_returned}</TableCell>
+                                                    <TableCell>{row.returnDate}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
@@ -148,13 +147,5 @@ class DashboardPage extends React.Component {
         );
     }
 }
-
-// function DashboardPage(props) {
-    
-// }
-
-DashboardPage.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
 
 export default withStyles(styles)(DashboardPage);

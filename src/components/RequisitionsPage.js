@@ -1,8 +1,9 @@
-import React from 'react'
-import { CssBaseline, withStyles, Paper, Typography, Table, TableCell, TableRow, TableHead, TableBody, Divider, Badge, Grid, Button } from "@material-ui/core";
+import { Badge, Button, CssBaseline, Divider, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from "@material-ui/core";
 import PropTypes from 'prop-types';
-import PermanentDrawer from "./PermanentDrawer";
+import React from 'react';
 import createRequisition from '../helpers/createRequisition';
+import PermanentDrawer from "./PermanentDrawer";
+import CreateNewRequisitionModal from "./CreateNewRequisitionModal";
 
 
 const styles = theme => ({
@@ -49,6 +50,22 @@ const requisitions = [
 ];
 
 class RequistionsPage extends React.Component {
+    state = {
+        modalOpen: false,
+        requisitions: JSON.parse(JSON.stringify(requisitions))
+    }
+
+    handleOpen = () => this.setState({ modalOpen: true })
+
+    handleClose = () => this.setState({ modalOpen: false })
+
+    handleAccept = requisition => {
+        const { name, role, item, returnDate } = requisition
+        this.setState({
+            requisitions: [...this.state.requisitions, createRequisition(name, role, item, returnDate)]
+        })
+    }
+
     render() {
         const { classes } = this.props;
 
@@ -58,15 +75,20 @@ class RequistionsPage extends React.Component {
                 <PermanentDrawer history={this.props.history} />
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
+                    {this.state.modalOpen && <CreateNewRequisitionModal open={this.state.modalOpen} onClose={this.handleClose} onAccept={this.handleAccept} />}
                     <Paper>
                         <Grid container justify='space-between' alignItems='center'>
                             <Grid item>
-                                <Badge badgeContent={12} color='primary' className={classes.badge}>
+                                <Badge badgeContent={this.state.requisitions.length} color='primary' className={classes.badge}>
                                     <Typography variant='h4' gutterBottom className={`${classes.paperHeading} ${classes.requisitionHeading}`}>Requisitions</Typography>
                                 </Badge>
                             </Grid>
                             <Grid item>
-                                <Button variant='outlined' color='primary' className={classes.createNewButton}>Create New</Button>
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    className={classes.createNewButton}
+                                    onClick={this.handleOpen}>Create New</Button>
                             </Grid>
                         </Grid>
                         <Divider variant='middle' />
@@ -81,12 +103,12 @@ class RequistionsPage extends React.Component {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {requisitions.map(row => (
+                                    {this.state.requisitions.map(row => (
                                         <TableRow key={row.id} hover className={classes.clickable}>
                                             <TableCell>{row.name}</TableCell>
                                             <TableCell>{row.role}</TableCell>
                                             <TableCell>{row.item}</TableCell>
-                                            <TableCell>{row.date_returned}</TableCell>
+                                            <TableCell>{row.returnDate}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
