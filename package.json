@@ -24,10 +24,14 @@
     "mongoose": "^5.4.3",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
+    "redux": "^4.0.1",
+    "uuid": "^3.3.2",
     "webpack": "^4.28.2"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
     "jshint": "^2.9.7",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.13"

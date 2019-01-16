@@ -53,6 +53,7 @@ const styles = theme => ({
 
 class PaperSheet extends Component {
     state = {
+        username: '',
         password: '',
         showPassword: false
     }
@@ -87,7 +88,12 @@ class PaperSheet extends Component {
                                     <Typography variant="h6" gutterBottom align='center' color='primary'>Kumasi Hive Makerspace</Typography>
                                     <Typography variant="subtitle1" align='center' gutterBottom>Inventory Management System</Typography>
                                     <form className={classes.form}>
-                                        <TextField fullWidth id="username" label="Username"></TextField>
+                                        <TextField 
+                                            value={this.state.username}
+                                            onChange={this.handleChange('username')}
+                                            fullWidth
+                                            id="username"
+                                            label="Username" />
                                         <FormControl fullWidth>
                                             <InputLabel htmlFor="adornment-password">Password</InputLabel>
                                             <Input

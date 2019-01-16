@@ -1,7 +1,7 @@
-import { Button, Modal, TextField, Typography } from '@material-ui/core';
+import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
-import React from 'react';
+import { Typography, TextField, Modal, Button } from '@material-ui/core';
 
 
 function getModalStyle() {
@@ -29,9 +29,8 @@ const styles = theme => ({
     }
 });
 
-class CreateNewRequisitionModal extends React.Component {
+class CreateRequisitionModal extends Component {
     state = {
-        open: true,
         name: '',
         role: '',
         item: '',
@@ -46,7 +45,7 @@ class CreateNewRequisitionModal extends React.Component {
         const returnDate = moment(event.target.value, moment.ISO_8601);
         const today = moment(moment().format('D MM YYYY'), 'D MM YYYY')
         if (name === 'returnDate') {
-            if (returnDate.diff(today) < 0) this.setState({ dateError: true})
+            if (returnDate.diff(today) < 0) this.setState({ dateError: true })
             else this.setState({ dateError: false })
         }
     }
@@ -72,12 +71,12 @@ class CreateNewRequisitionModal extends React.Component {
         const { classes } = this.props
         return (
             <Modal
-                open={this.state.open}
+                open
                 onClose={this.props.onClose}
             >
                 <div style={getModalStyle()} className={classes.paper}>
-                    <Typography variant="h6" gutterBottom id="modal-title" align='center'>Add New Requisition</Typography>
-                    <form>
+                    <Typography variant="h6" gutterBottom id="modal-title" align='center'>Add New Stock</Typography>
+                    <form> 
                         <TextField
                             label="Name"
                             className={classes.textField}
@@ -132,4 +131,4 @@ class CreateNewRequisitionModal extends React.Component {
     }
 }
 
-export default withStyles(styles)(CreateNewRequisitionModal);
+export default withStyles(styles)(CreateRequisitionModal);

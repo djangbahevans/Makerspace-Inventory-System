@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
@@ -16,9 +17,9 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import ReportIcon from '@material-ui/icons/Description';
 import SearchIcon from '@material-ui/icons/Search';
 import StoreIcon from '@material-ui/icons/Store';
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-
+import CreateStockModal from './CreateStockModal';
+import { connect } from 'react-redux'
 
 const drawerWidth = 240;
 
@@ -29,6 +30,7 @@ const styles = theme => ({
     appBar: {
         width: `calc(100% - ${drawerWidth}px)`,
         marginLeft: drawerWidth,
+        // display: 'flex'
     },
     drawer: {
         width: drawerWidth,
@@ -77,26 +79,20 @@ const styles = theme => ({
             '&:focus': {
                 width: '60vw',
             },
-        },
+        }
+    },
+    grow: {
+        flexGrow: 1
+    },
+    stockButton: {
+
     }
 });
 
-let id = 0;
-function createData(name, role, item, date_returned) {
-    id += 1;
-    return { id, name, role, item, date_returned };
-}
-
-const rows = [
-    createData('Evans Djangbah', 'Makerspace Associate', 'Hammer', '04-01-2019'),
-    createData('Linda Aidoo Lamptey', 'Administration Associate', 'Paint Brush', '16-01-2019'),
-    createData('Prince Banini', 'Technical Associate', 'Soldering Iron', '11-02-2019'),
-    createData('Prince Banini', 'Technical Associate', 'Solder', '11-02-2019'),
-    createData('Prince Banini', 'Technical Associate', 'Arduino', '11-02-2019'),
-];
-
-
 class PermanentDrawerLeft extends Component {
+    state = {
+        modalOpen: true
+    }
 
     navChangeHandler = e => {
         const location = e.target.innerText.toLowerCase().trim()
@@ -104,12 +100,17 @@ class PermanentDrawerLeft extends Component {
         console.log(this.props.history)
     }
 
+    handleClose = () => this.setState({ modalOpen: false })
+
+    handleOpen = () => this.setState({ modalOpen: true })
+
     render() {
         const { classes } = this.props;
 
         return (
             <div>
                 <CssBaseline />
+                {this.state.modalOpen && <CreateStockModal onClose={this.handleClose} />}
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
                         <div className={classes.search}>
@@ -124,6 +125,8 @@ class PermanentDrawerLeft extends Component {
                                 }}
                             />
                         </div>
+                        <div className={classes.grow} />
+                        <Button variant='outlined' color='secondary' onClick={this.handleOpen} className={classes.stockButton}>New Stock</Button>
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -150,8 +153,6 @@ class PermanentDrawerLeft extends Component {
     }
 }
 
-PermanentDrawerLeft.propTypes = {
-    classes: PropTypes.object.isRequired,
-};
 
-export default withStyles(styles)(PermanentDrawerLeft);
+
+export default connect()(withStyles(styles)(PermanentDrawerLeft));

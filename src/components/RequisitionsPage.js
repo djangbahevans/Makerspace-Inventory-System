@@ -1,9 +1,9 @@
 import { Badge, Button, CssBaseline, Divider, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from "@material-ui/core";
-import PropTypes from 'prop-types';
 import React from 'react';
-import createRequisition from '../helpers/createRequisition';
+import { connect } from 'react-redux';
+import { addRequisition } from "../actions/requistions";
+import CreateRequisitionModal from "./CreateRequisitionModal";
 import PermanentDrawer from "./PermanentDrawer";
-import CreateNewRequisitionModal from "./CreateNewRequisitionModal";
 
 
 const styles = theme => ({
@@ -41,29 +41,20 @@ const styles = theme => ({
     }
 });
 
-const requisitions = [
-    createRequisition('Evans Djangbah', 'Makerspace Associate', 'Hammer', '04-01-2019'),
-    createRequisition('Linda Aidoo Lamptey', 'Administration Associate', 'Paint Brush', '16-01-2019'),
-    createRequisition('Prince Banini', 'Technical Associate', 'Soldering Iron', '11-02-2019'),
-    createRequisition('Prince Banini', 'Technical Associate', 'Solder', '11-02-2019'),
-    createRequisition('Prince Banini', 'Technical Associate', 'Arduino', '11-02-2019'),
-];
-
 class RequistionsPage extends React.Component {
     state = {
         modalOpen: false,
-        requisitions: JSON.parse(JSON.stringify(requisitions))
     }
+
+    requisitions = this.props.requisitions
 
     handleOpen = () => this.setState({ modalOpen: true })
 
     handleClose = () => this.setState({ modalOpen: false })
 
     handleAccept = requisition => {
-        const { name, role, item, returnDate } = requisition
-        this.setState({
-            requisitions: [...this.state.requisitions, createRequisition(name, role, item, returnDate)]
-        })
+        const { name, role, item, returnDate } = requisition;
+        this.props.addRequisition({ name, role, item, returnDate });
     }
 
     render() {
@@ -75,11 +66,11 @@ class RequistionsPage extends React.Component {
                 <PermanentDrawer history={this.props.history} />
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    {this.state.modalOpen && <CreateNewRequisitionModal open={this.state.modalOpen} onClose={this.handleClose} onAccept={this.handleAccept} />}
+                    {this.state.modalOpen && <CreateRequisitionModal onClose={this.handleClose} onAccept={this.handleAccept} />}
                     <Paper>
                         <Grid container justify='space-between' alignItems='center'>
                             <Grid item>
-                                <Badge badgeContent={this.state.requisitions.length} color='primary' className={classes.badge}>
+                                <Badge badgeContent={this.props.requisitions.length} color='primary' className={classes.badge}>
                                     <Typography variant='h4' gutterBottom className={`${classes.paperHeading} ${classes.requisitionHeading}`}>Requisitions</Typography>
                                 </Badge>
                             </Grid>
@@ -103,7 +94,7 @@ class RequistionsPage extends React.Component {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {this.state.requisitions.map(row => (
+                                    {this.props.requisitions.map(row => (
                                         <TableRow key={row.id} hover className={classes.clickable}>
                                             <TableCell>{row.name}</TableCell>
                                             <TableCell>{row.role}</TableCell>
@@ -117,12 +108,13 @@ class RequistionsPage extends React.Component {
                     </Paper>
                 </main>
             </div>
-        )
+        );
     }
 }
 
-RequistionsPage.propTypes = {
-    classes: PropTypes.object.isRequired
-};
+const mapDispatchToProps = dispatch => ({
+    addRequisition: requisition => dispatch(addRequisition(requisition))
+})
+const mapStateToProps = ({ requisitions }) => ({ requisitions })
 
-export default withStyles(styles)(RequistionsPage);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(RequistionsPage));

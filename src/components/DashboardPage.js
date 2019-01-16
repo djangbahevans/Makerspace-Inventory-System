@@ -2,9 +2,8 @@ import { Badge, Button, Grid, Paper, Table, TableBody, TableCell, TableHead, Tab
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
 import { withStyles } from '@material-ui/core/styles';
-import React from 'react';
-import createRequisition from '../helpers/createRequisition';
-import createStock from '../helpers/createStock';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PermanentDrawer from './PermanentDrawer';
 
 
@@ -38,22 +37,11 @@ const styles = theme => ({
     }
 });
 
-const requisitions = [
-    createRequisition('Evans Djangbah', 'Makerspace Associate', 'Hammer', '04-01-2019'),
-    createRequisition('Linda Aidoo Lamptey', 'Administration Associate', 'Paint Brush', '16-01-2019'),
-    createRequisition('Prince Banini', 'Technical Associate', 'Soldering Iron', '11-02-2019'),
-    createRequisition('Prince Banini', 'Technical Associate', 'Solder', '11-02-2019'),
-    createRequisition('Prince Banini', 'Technical Associate', 'Arduino', '11-02-2019'),
-];
+class DashboardPage extends Component {
+    state = {
+        stocks: this.props.stocks
+    }
 
-const stocks = [
-    createStock('Hammer', 2, 1, 4),
-    createStock('Screwdriver', 15, 3, 20),
-    createStock('1.75mm filament', 'N/A', 0, 5),
-]
-
-
-class DashboardPage extends React.Component {
     render () {
         const { classes } = this.props;
 
@@ -68,7 +56,7 @@ class DashboardPage extends React.Component {
                             <Paper>
                                 <Grid container justify='space-between' alignItems='center'>
                                     <Grid item>
-                                        <Badge badgeContent={12} color='primary' className={classes.badge}>
+                                        <Badge badgeContent={this.props.requisitions.length} color='primary' className={classes.badge}>
                                             <Typography variant='h4' gutterBottom className={`${classes.paperHeading} ${classes.requisitionHeading}`}>Requisitions</Typography>
                                         </Badge>
                                     </Grid>
@@ -88,7 +76,7 @@ class DashboardPage extends React.Component {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {requisitions.map(row => (
+                                            {this.props.requisitions.map(row => (
                                                 <TableRow key={row.id}>
                                                     <TableCell>{row.name}</TableCell>
                                                     <TableCell>{row.role}</TableCell>
@@ -123,7 +111,7 @@ class DashboardPage extends React.Component {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {stocks.map(row => (
+                                            {this.state.stocks.map(row => (
                                                 <TableRow key={row.id}>
                                                     <TableCell>{row.item}</TableCell>
                                                     <TableCell>{row.quantity}</TableCell>
@@ -148,4 +136,6 @@ class DashboardPage extends React.Component {
     }
 }
 
-export default withStyles(styles)(DashboardPage);
+const ConnectedDashboardPage = connect(({requisitions, stocks}) => ({ requisitions, stocks}))(withStyles(styles)(DashboardPage))
+
+export default ConnectedDashboardPage;
