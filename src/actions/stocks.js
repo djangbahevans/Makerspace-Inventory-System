@@ -1,11 +1,11 @@
 import uuid from 'uuid';
 
-export const addStock = ({ name, total, numberInStock }) => ({
+export const addStock = ({ name, quantity, numberInStock }) => ({
     type: 'ADD_STOCK',
     stock: {
         id: uuid(),
         name,
-        total,
+        quantity,
         numberInStock
     }
 })

@@ -31,38 +31,35 @@ const styles = theme => ({
 
 class CreateRequisitionModal extends Component {
     state = {
-        name: '',
-        role: '',
-        item: '',
-        returnDate: moment().format('YYYY-MM-D'),
-        dateError: false,
+        name: this.props.name ? this.props.name : '',
+        quantity: this.props.quantity ? this.props.quantity : 1,
+        numberInStock: this.props.numberInStock ? this.props.numberInStock : 0,
     }
 
     handleChange = name => event => {
+        if (name === 'quantity') {
+            const num = Number.parseInt(event.target.value);
+            if (!num || num <= 0) return  // Cannot be empty or Cannot be negative or zero
+            if (this.state.numberInStock > num) this.setState({ numberInStock: num })
+        }
+        else if (name === 'numberInStock') {
+            const num = Number.parseInt(event.target.value);
+            if (isNaN(num) || num < 0 || num > this.state.quantity) return; // Cannot be empty or greater than quantity
+        }
         this.setState({
             [name]: event.target.value
         });
-        const returnDate = moment(event.target.value, moment.ISO_8601);
-        const today = moment(moment().format('D MM YYYY'), 'D MM YYYY')
-        if (name === 'returnDate') {
-            if (returnDate.diff(today) < 0) this.setState({ dateError: true })
-            else this.setState({ dateError: false })
-        }
     }
 
     handleAccept = () => {
-        const { name, role, item } = this.state;
-        let returnDate = moment(this.state.returnDate, moment.ISO_8601);
+        const { name, quantity, numberInStock } = this.state;
 
-        const today = moment(moment().format('D MM YYYY'), 'D MM YYYY')
-        if (name && item && returnDate.diff(today, 'days') >= 0) {
+        if (name) {
             this.props.onAccept({
                 name,
-                role,
-                item,
-                returnDate: returnDate.format('D-MM-YYYY')
+                quantity,
+                numberInStock,
             });
-            this.setState({ open: false })
             this.props.onClose()
         }
     }
@@ -76,7 +73,7 @@ class CreateRequisitionModal extends Component {
             >
                 <div style={getModalStyle()} className={classes.paper}>
                     <Typography variant="h6" gutterBottom id="modal-title" align='center'>Add New Stock</Typography>
-                    <form> 
+                    <form>
                         <TextField
                             label="Name"
                             className={classes.textField}
@@ -89,33 +86,25 @@ class CreateRequisitionModal extends Component {
                             error={!this.state.name}
                         />
                         <TextField
-                            label="Role"
+                            label="Quantity"
                             className={classes.textField}
-                            value={this.state.role}
-                            onChange={this.handleChange('role')}
+                            value={this.state.quantity}
+                            onChange={this.handleChange('quantity')}
                             margin="normal"
-                            fullWidth
-                        />
-                        <TextField
-                            label="Item"
-                            className={classes.textField}
-                            value={this.state.item}
-                            onChange={this.handleChange('item')}
-                            margin="normal"
+                            type="number"
                             fullWidth
                             required
-                            error={!this.state.item}
                         />
                         <TextField
-                            label="Return Date"
-                            type="date"
+                            label="Number in Stock"
                             className={classes.textField}
-                            value={this.state.returnDate}
-                            onChange={this.handleChange('returnDate')}
+                            value={this.state.numberInStock}
+                            onChange={this.handleChange('numberInStock')}
                             margin="normal"
+                            type="number"
                             fullWidth
                             required
-                            error={this.state.dateError}
+                        // error={!this.state.numberInStock}
                         />
                         <Button
                             onClick={this.handleAccept}

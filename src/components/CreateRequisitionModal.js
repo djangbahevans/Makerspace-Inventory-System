@@ -31,37 +31,39 @@ const styles = theme => ({
 
 class CreateRequisitionModal extends React.Component {
     state = {
-        name: '',
-        role: '',
-        item: '',
-        returnDate: moment().format('YYYY-MM-D'),
+        id: this.props.id ? this.props.id : '',
+        name: this.props.name ? this.props.name : '',
+        role: this.props.role ? this.props.role : '',
+        item: this.props.item ? this.props.item : '',
+        returnDate: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'),
         dateError: false,
     }
 
     handleChange = name => event => {
+        if (name === 'returnDate') {
+            const returnDate = moment(event.target.value, moment.ISO_8601);
+            const today = moment(moment().format('DD MM YYYY'), 'DD MM YYYY')
+            if (returnDate.diff(today) < 0) return this.setState({ dateError: true })
+            else this.setState({ dateError: false })
+        }
         this.setState({
             [name]: event.target.value
         });
-        const returnDate = moment(event.target.value, moment.ISO_8601);
-        const today = moment(moment().format('D MM YYYY'), 'D MM YYYY')
-        if (name === 'returnDate') {
-            if (returnDate.diff(today) < 0) this.setState({ dateError: true})
-            else this.setState({ dateError: false })
-        }
     }
 
     handleAccept = () => {
-        const { name, role, item } = this.state;
+        const { id, name, role, item } = this.state;
         let returnDate = moment(this.state.returnDate, moment.ISO_8601);
 
-        const today = moment(moment().format('D MM YYYY'), 'D MM YYYY')
+        const today = moment(moment().format('DD MM YYYY'), 'DD MM YYYY')
         if (name && item && returnDate.diff(today, 'days') >= 0) {
             this.props.onAccept({
+                id,
                 name,
                 role,
                 item,
-                returnDate: returnDate.format('D-MM-YYYY')
-            });
+                returnDate: returnDate.format('DD-MM-YYYY')
+            }, this.props.edit);
             this.props.onClose()
         }
     }
@@ -74,7 +76,7 @@ class CreateRequisitionModal extends React.Component {
                 onClose={this.props.onClose}
             >
                 <div style={getModalStyle()} className={classes.paper}>
-                    <Typography variant="h6" gutterBottom id="modal-title" align='center'>Add New Requisition</Typography>
+                    <Typography variant="h6" gutterBottom id="modal-title" align='center'>{this.props.edit ? 'Edit Requisition' : 'Add New Requisition'}</Typography>
                     <form>
                         <TextField
                             label="Name"
@@ -82,9 +84,12 @@ class CreateRequisitionModal extends React.Component {
                             value={this.state.name}
                             onChange={this.handleChange('name')}
                             margin="normal"
+                            InputProps={{
+                                readOnly: this.props.edit,
+                            }}
+                            autoFocus={!this.props.edit}
                             fullWidth
                             required
-                            autoFocus
                             error={!this.state.name}
                         />
                         <TextField
@@ -92,6 +97,7 @@ class CreateRequisitionModal extends React.Component {
                             className={classes.textField}
                             value={this.state.role}
                             onChange={this.handleChange('role')}
+                            autoFocus={this.props.edit}
                             margin="normal"
                             fullWidth
                         />

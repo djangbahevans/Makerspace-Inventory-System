@@ -10,12 +10,17 @@ export const addRequisition = ({ name, role = '', item, returnDate }) => ({
         item,
         returnDate
     }
-})
+});
 
-
-export const removeRequisition = ({ id }) => ({
-    type: 'REMOVE_REQUISITION',
+export const deleteRequisition = id => ({
+    type: 'DELETE_REQUISITION',
     id
-})
+});
+
+export const editRequisition = (id, updates) => ({
+    type: 'EDIT_REQUISITION',
+    id,
+    updates
+});
 
 // TODO: Add edit requisition

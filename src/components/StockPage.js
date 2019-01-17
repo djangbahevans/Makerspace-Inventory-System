@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import PermanentDrawer from './PermanentDrawer';
 import Stock from './Stock';
+import { connect } from 'react-redux';
 
 
 const styles = theme => ({
@@ -44,17 +45,14 @@ class StockPage extends Component {
                     <div className={classes.toolbar} />
                     {/* <Paper> */}
                         <Grid container spacing={40}>
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
-                            <Stock image='./img/hammer.jpg' title='Wood hammer' header='Hammer' total={2} no_in_stock={1} />
+                            {this.props.stocks.map(stock => 
+                                <Stock
+                                    key={stock.id}
+                                    image={`./img/${stock.name.toLowerCase()}.jpg`}
+                                    title={stock.name}
+                                    header={stock.name}
+                                    quantity={stock.quantity}
+                                    numberInStock={stock.numberInStock} />)}
                         </Grid>
                     {/* </Paper> */}
                 </main>
@@ -63,4 +61,6 @@ class StockPage extends Component {
     }
 }
 
-export default withStyles(styles)(StockPage);
+const mapStateToProps = ({ stocks }) => ({ stocks })
+
+export default connect(mapStateToProps)(withStyles(styles)(StockPage));

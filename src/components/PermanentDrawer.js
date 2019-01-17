@@ -20,6 +20,7 @@ import StoreIcon from '@material-ui/icons/Store';
 import React, { Component } from 'react';
 import CreateStockModal from './CreateStockModal';
 import { connect } from 'react-redux'
+import { addStock } from '../actions/stocks';
 
 const drawerWidth = 240;
 
@@ -91,18 +92,19 @@ const styles = theme => ({
 
 class PermanentDrawerLeft extends Component {
     state = {
-        modalOpen: true
+        modalOpen: false
     }
 
     navChangeHandler = e => {
         const location = e.target.innerText.toLowerCase().trim()
         this.props.history.push(`/${location}`)
-        console.log(this.props.history)
     }
 
     handleClose = () => this.setState({ modalOpen: false })
 
     handleOpen = () => this.setState({ modalOpen: true })
+
+    handleStockAdd = ({ name, quantity, numberInStock }) => this.props.addStock({ name, quantity, numberInStock})
 
     render() {
         const { classes } = this.props;
@@ -110,7 +112,7 @@ class PermanentDrawerLeft extends Component {
         return (
             <div>
                 <CssBaseline />
-                {this.state.modalOpen && <CreateStockModal onClose={this.handleClose} />}
+                {this.state.modalOpen && <CreateStockModal onAccept={this.handleStockAdd} onClose={this.handleClose} />}
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
                         <div className={classes.search}>
@@ -153,6 +155,8 @@ class PermanentDrawerLeft extends Component {
     }
 }
 
+const mapDispatchToProps = dispatch => ({
+    addStock: stock => dispatch(addStock(stock))
+})
 
-
-export default connect()(withStyles(styles)(PermanentDrawerLeft));
+export default connect(undefined, mapDispatchToProps)(withStyles(styles)(PermanentDrawerLeft));

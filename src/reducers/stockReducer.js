@@ -3,7 +3,7 @@ import createStock from "../helpers/createStock";
 const defaultStocks = [
     createStock('Hammer', 2, 1, 4),
     createStock('Screwdriver', 15, 3, 20),
-    createStock('1.75mm filament', 'N/A', 0, 5),
+    createStock('3D Printer', 3, 3, 5),
 ]
 
 const stockReducer = (state = defaultStocks, action) => {

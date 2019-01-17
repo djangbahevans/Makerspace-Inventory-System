@@ -19,12 +19,6 @@ store.subscribe(() => {
     console.log(store.getState());
 });
 
-const func = () => { store.dispatch(addRequisition({ name: 'Evans', role: 'Makerspace Associate', item: 'Marker', returnDate: '23-01-2019'}))}
-setTimeout(
-    func,
-    3000
-)
-
 const routes = (
     <Provider store={store}>
         <BrowserRouter>

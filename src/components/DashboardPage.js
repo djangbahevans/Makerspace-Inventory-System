@@ -42,13 +42,15 @@ class DashboardPage extends Component {
         stocks: this.props.stocks
     }
 
-    render () {
+    handleSeeAll = name => () => this.props.history.push(name)
+
+    render() {
         const { classes } = this.props;
 
         return (
             <div className={classes.root}>
                 <CssBaseline />
-                <PermanentDrawer history={this.props.history}/>
+                <PermanentDrawer history={this.props.history} />
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
                     <Grid container spacing={24}>
@@ -61,7 +63,7 @@ class DashboardPage extends Component {
                                         </Badge>
                                     </Grid>
                                     <Grid item>
-                                        <Button variant='outlined' color='primary' className={classes.seeAllButton}>See All</Button>
+                                        <Button variant='outlined' color='primary' onClick={this.handleSeeAll('requisitions')} className={classes.seeAllButton}>See All</Button>
                                     </Grid>
                                 </Grid>
                                 <Divider variant='middle' />
@@ -76,7 +78,7 @@ class DashboardPage extends Component {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {this.props.requisitions.map(row => (
+                                            {this.props.requisitions.map((row, idx) => (
                                                 <TableRow key={row.id}>
                                                     <TableCell>{row.name}</TableCell>
                                                     <TableCell>{row.role}</TableCell>
@@ -96,7 +98,7 @@ class DashboardPage extends Component {
                                         <Typography variant='h4' gutterBottom className={classes.paperHeading}>Stock</Typography>
                                     </Grid>
                                     <Grid item>
-                                        <Button variant='outlined' color='primary' className={classes.seeAllButton}>See All</Button>
+                                        <Button variant='outlined' color='primary' onClick={this.handleSeeAll('stock')} className={classes.seeAllButton}>See All</Button>
                                     </Grid>
                                 </Grid>
                                 <Divider variant='middle' />
@@ -107,18 +109,19 @@ class DashboardPage extends Component {
                                                 <TableCell>Item</TableCell>
                                                 <TableCell>Quantity</TableCell>
                                                 <TableCell>No in Stock</TableCell>
-                                                <TableCell>Ideal Stock</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {this.state.stocks.map(row => (
-                                                <TableRow key={row.id}>
-                                                    <TableCell>{row.item}</TableCell>
-                                                    <TableCell>{row.quantity}</TableCell>
-                                                    <TableCell>{row.no_in_stock}</TableCell>
-                                                    <TableCell>{row.ideal_stock}</TableCell>
-                                                </TableRow>
-                                            ))}
+                                            {this.props.stocks.map((row, idx) => {
+                                                if (idx < 3)
+                                                    return (
+                                                        <TableRow key={row.id}>
+                                                            <TableCell>{row.name}</TableCell>
+                                                            <TableCell>{row.quantity}</TableCell>
+                                                            <TableCell>{row.numberInStock}</TableCell>
+                                                        </TableRow>
+                                                    );
+                                            })}
                                         </TableBody>
                                     </Table>
                                 </div>
@@ -136,6 +139,4 @@ class DashboardPage extends Component {
     }
 }
 
-const ConnectedDashboardPage = connect(({requisitions, stocks}) => ({ requisitions, stocks}))(withStyles(styles)(DashboardPage))
-
-export default ConnectedDashboardPage;
+export default connect(({ requisitions, stocks }) => ({ requisitions, stocks }))(withStyles(styles)(DashboardPage))

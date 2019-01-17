@@ -1,9 +1,10 @@
 import { Badge, Button, CssBaseline, Divider, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from "@material-ui/core";
 import React from 'react';
 import { connect } from 'react-redux';
-import { addRequisition } from "../actions/requistions";
+import { addRequisition, editRequisition, deleteRequisition } from "../actions/requistions";
 import CreateRequisitionModal from "./CreateRequisitionModal";
 import PermanentDrawer from "./PermanentDrawer";
+import RequisitionTableRow from "./RequisitionTableRow";
 
 
 const styles = theme => ({
@@ -34,28 +35,46 @@ const styles = theme => ({
     table: {
         padding: '30px'
     },
-    clickable: {
-        '&:hover': {
-            cursor: 'pointer'
-        }
-    }
 });
 
 class RequistionsPage extends React.Component {
     state = {
-        modalOpen: false,
+        createModalOpen: false,
+        editModalOpen: false,
+        id: '',
+        name: '',
+        role: '',
+        item: '',
+        returnDate: ''
     }
 
     requisitions = this.props.requisitions
 
-    handleOpen = () => this.setState({ modalOpen: true })
+    handleOpen = () => this.setState({ createModalOpen: true });
 
-    handleClose = () => this.setState({ modalOpen: false })
+    handleEdit = ({id, name, role, item, returnDate }) => () => {
+        this.setState({
+            editModalOpen: true,
+            id,
+            name,
+            role,
+            item,
+            returnDate
+        })
+    };
 
-    handleAccept = requisition => {
-        const { name, role, item, returnDate } = requisition;
+    handleClose = () => this.setState({
+        createModalOpen: false,
+        editModalOpen: false
+    })
+
+
+    handleAccept = ({ id, name, role, item, returnDate }, edit) => {
+        if (edit) return this.props.editRequisition(id, { role, item, returnDate })
         this.props.addRequisition({ name, role, item, returnDate });
     }
+
+    handleDelete = id => this.props.deleteRequisition(id)
 
     render() {
         const { classes } = this.props;
@@ -66,7 +85,15 @@ class RequistionsPage extends React.Component {
                 <PermanentDrawer history={this.props.history} />
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    {this.state.modalOpen && <CreateRequisitionModal onClose={this.handleClose} onAccept={this.handleAccept} />}
+                    {this.state.createModalOpen && <CreateRequisitionModal onClose={this.handleClose} onAccept={this.handleAccept} />}
+                    {this.state.editModalOpen && <CreateRequisitionModal edit
+                        onClose={this.handleClose}
+                        onAccept={this.handleAccept}
+                        id={this.state.id}
+                        name={this.state.name}
+                        role={this.state.role}
+                        returnDate={this.state.returnDate}
+                        item={this.state.item} />}
                     <Paper>
                         <Grid container justify='space-between' alignItems='center'>
                             <Grid item>
@@ -91,17 +118,22 @@ class RequistionsPage extends React.Component {
                                         <TableCell>Role</TableCell>
                                         <TableCell>Item</TableCell>
                                         <TableCell>Return Date</TableCell>
+                                        <TableCell></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {this.props.requisitions.map(row => (
-                                        <TableRow key={row.id} hover className={classes.clickable}>
-                                            <TableCell>{row.name}</TableCell>
-                                            <TableCell>{row.role}</TableCell>
-                                            <TableCell>{row.item}</TableCell>
-                                            <TableCell>{row.returnDate}</TableCell>
-                                        </TableRow>
+                                        <RequisitionTableRow
+                                            key={row.id}
+                                            id={row.id}
+                                            name={row.name}
+                                            role={row.role}
+                                            item={row.item}
+                                            returnDate={row.returnDate}
+                                            handleEdit={this.handleEdit}
+                                            handleDelete={this.handleDelete} />
                                     ))}
+                                    {/* TODO: Add Remove cell functionality */}
                                 </TableBody>
                             </Table>
                         </div>
@@ -113,7 +145,9 @@ class RequistionsPage extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-    addRequisition: requisition => dispatch(addRequisition(requisition))
+    addRequisition: requisition => dispatch(addRequisition(requisition)),
+    editRequisition: (id, requisition) => dispatch(editRequisition(id, requisition)),
+    deleteRequisition: id => dispatch(deleteRequisition(id))
 })
 const mapStateToProps = ({ requisitions }) => ({ requisitions })
 

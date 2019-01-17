@@ -1,9 +1,9 @@
 import uuid from 'uuid'
 
 
-function createStock(item, quantity, no_in_stock, ideal_stock) {
+function createStock(name, quantity, numberInStock) {
     const id = uuid()
-    return { id, item, quantity, no_in_stock, ideal_stock };
+    return { id, name, quantity, numberInStock };
 }
 
 export default createStock;

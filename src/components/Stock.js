@@ -1,4 +1,4 @@
-import { Card, CardActionArea, CardContent, CardMedia, Grid, Typography, withStyles } from "@material-ui/core";
+import { Card, CardActionArea, CardContent, CardMedia, Grid, Typography, withStyles, CardActions, Button } from "@material-ui/core";
 import React, { Component } from 'react';
 
 
@@ -26,21 +26,20 @@ class Stock extends Component {
                             title={this.props.title}
                         />
                         <CardContent>
-                            <Typography gutterBottom variant="h5" component="h2">{this.props.header}</Typography>
+                            <Typography gutterBottom variant="h5" component="h2">{this.props.title}</Typography>
                             <Grid container spacing={8}>
                                 <Grid item xs={6}><Typography>Total: </Typography></Grid>
-                                <Grid item xs={6}>{this.props.total}</Grid>
+                                <Grid item xs={6}>{this.props.quantity}</Grid>
                                 <Grid item xs={6}><Typography>Number in Stock: </Typography></Grid>
-                                <Grid item xs={6}>{this.props.no_in_stock}</Grid>
+                                <Grid item xs={6}>{this.props.numberInStock}</Grid>
                             </Grid>
                         </CardContent>
                     </CardActionArea>
-                    {/* <CardActions>
-                                    <Button size="small" color="primary">
-                                        Share</Button>
-                                    <Button size="small" color="primary">
-                                        Learn More</Button>
-                                </CardActions> */}
+                    <CardActions>
+                        <Button size="small" color="primary">
+                            Edit</Button>
+                        {/* TODO: Add edit button functionality */}
+                    </CardActions>
                 </Card>
             </Grid>
         );

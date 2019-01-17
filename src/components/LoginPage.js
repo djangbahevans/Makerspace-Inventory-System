@@ -64,7 +64,6 @@ class PaperSheet extends Component {
 
     handleClickShowPassword = () => {
         this.setState(state => ({ showPassword: !state.showPassword }))
-        console.log(this.props)
     }
 
     handleSubmit = () => {
