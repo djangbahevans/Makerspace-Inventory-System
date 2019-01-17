@@ -22,5 +22,3 @@ export const editRequisition = (id, updates) => ({
     id,
     updates
 });
-
-// TODO: Add edit requisition

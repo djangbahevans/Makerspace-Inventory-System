@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { Typography, TextField, Modal, Button } from '@material-ui/core';
+import { connect } from 'react-redux'
+import { addStock, editStock } from '../actions/stocks';
 
 
 function getModalStyle() {
@@ -37,13 +39,14 @@ class CreateRequisitionModal extends Component {
     }
 
     handleChange = name => event => {
+        const num = Number.parseInt(event.target.value);
         if (name === 'quantity') {
-            const num = Number.parseInt(event.target.value);
+            if (num != event.target.value) return; // Must be an integer
             if (!num || num <= 0) return  // Cannot be empty or Cannot be negative or zero
             if (this.state.numberInStock > num) this.setState({ numberInStock: num })
         }
         else if (name === 'numberInStock') {
-            const num = Number.parseInt(event.target.value);
+            if (num != event.target.value) return; // Must be an integer
             if (isNaN(num) || num < 0 || num > this.state.quantity) return; // Cannot be empty or greater than quantity
         }
         this.setState({
@@ -53,26 +56,23 @@ class CreateRequisitionModal extends Component {
 
     handleAccept = () => {
         const { name, quantity, numberInStock } = this.state;
-
+        if (this.props.edit) return
         if (name) {
-            this.props.onAccept({
-                name,
-                quantity,
-                numberInStock,
-            });
+            this.props.addStock({ name, quantity, numberInStock })
             this.props.onClose()
         }
     }
 
     render = () => {
         const { classes } = this.props
+        console.log(this.props.edit)
         return (
             <Modal
                 open
                 onClose={this.props.onClose}
             >
                 <div style={getModalStyle()} className={classes.paper}>
-                    <Typography variant="h6" gutterBottom id="modal-title" align='center'>Add New Stock</Typography>
+                    <Typography variant="h6" gutterBottom id="modal-title" align='center'>{this.props.edit ? 'Edit Stock' : 'Add New Stock'}</Typography>
                     <form>
                         <TextField
                             label="Name"
@@ -80,9 +80,12 @@ class CreateRequisitionModal extends Component {
                             value={this.state.name}
                             onChange={this.handleChange('name')}
                             margin="normal"
+                            InputProps={{
+                                readOnly: this.props.edit,
+                            }}
                             fullWidth
                             required
-                            autoFocus
+                            autoFocus={!this.props.edit}
                             error={!this.state.name}
                         />
                         <TextField
@@ -92,6 +95,7 @@ class CreateRequisitionModal extends Component {
                             onChange={this.handleChange('quantity')}
                             margin="normal"
                             type="number"
+                            autoFocus={this.props.edit}
                             fullWidth
                             required
                         />
@@ -120,4 +124,9 @@ class CreateRequisitionModal extends Component {
     }
 }
 
-export default withStyles(styles)(CreateRequisitionModal);
+const mapDispatchToProps = dispatch => ({
+    addStock: stock => dispatch(addStock(stock)),
+    editStock: (id, stock) => dispatch(editStock(id, stock))
+})
+
+export default connect(undefined, mapDispatchToProps)(withStyles(styles)(CreateRequisitionModal));

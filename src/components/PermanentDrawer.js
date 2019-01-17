@@ -104,7 +104,7 @@ class PermanentDrawerLeft extends Component {
 
     handleOpen = () => this.setState({ modalOpen: true })
 
-    handleStockAdd = ({ name, quantity, numberInStock }) => this.props.addStock({ name, quantity, numberInStock})
+    // handleStockAdd = ({ name, quantity, numberInStock }) => this.props.addStock({ name, quantity, numberInStock})
 
     render() {
         const { classes } = this.props;

@@ -43,7 +43,6 @@ class StockPage extends Component {
                 <PermanentDrawer history={this.props.history} />
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    {/* <Paper> */}
                         <Grid container spacing={40}>
                             {this.props.stocks.map(stock => 
                                 <Stock
@@ -54,7 +53,6 @@ class StockPage extends Component {
                                     quantity={stock.quantity}
                                     numberInStock={stock.numberInStock} />)}
                         </Grid>
-                    {/* </Paper> */}
                 </main>
             </div>
         )
