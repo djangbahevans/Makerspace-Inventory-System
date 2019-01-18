@@ -13,7 +13,6 @@ const RequisitionSchema = new Schema({
     item: {
         type: String,
         required: true,
-        min: 1
     },
     returnDate: {
         // type: Date,

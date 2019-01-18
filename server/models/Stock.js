@@ -5,7 +5,7 @@ const StockSchema = new Schema({
     name: {
         type: String,
         required: true,
-        // unique: true
+        unique: true
     },
     quantity: {
         type: Number,
@@ -19,6 +19,6 @@ const StockSchema = new Schema({
     },
 })
 
-const Stock = mongoose.model('Stock', StockSchema);
+const Stocks = mongoose.model('Stock', StockSchema);
 
-module.exports = Stock;
+module.exports = Stocks;

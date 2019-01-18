@@ -19,7 +19,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import StoreIcon from '@material-ui/icons/Store';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { addStock } from '../actions/stocks';
 import CreateStockModal from './CreateStockModal';
 
 const drawerWidth = 240;
@@ -153,8 +152,4 @@ class PermanentDrawerLeft extends Component {
     }
 }
 
-const mapDispatchToProps = dispatch => ({
-    addStock: stock => dispatch(addStock(stock))
-})
-
-export default connect(undefined, mapDispatchToProps)(withStyles(styles)(PermanentDrawerLeft));
+export default withStyles(styles)(PermanentDrawerLeft);

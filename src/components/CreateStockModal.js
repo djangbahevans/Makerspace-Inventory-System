@@ -30,9 +30,9 @@ const styles = theme => ({
     }
 });
 
-class CreateRequisitionModal extends Component {
+class CreateStockModal extends Component {
     state = {
-        id: '',
+        id: this.props.id ? this.props.id : '',
         name: this.props.name ? this.props.name : '',
         quantity: this.props.quantity ? this.props.quantity : 1,
         numberInStock: this.props.numberInStock ? this.props.numberInStock : 0,
@@ -59,7 +59,7 @@ class CreateRequisitionModal extends Component {
         if (this.props.edit) {
             this.props.startEditStock(id, { name, quantity, numberInStock })
         }
-        if (name) {
+        else if (name) {
             this.props.startAddStock({ id, name, quantity, numberInStock })
         }
         this.props.onClose()
@@ -130,4 +130,4 @@ const mapDispatchToProps = dispatch => ({
     startEditStock: (id, stock) => dispatch(startEditStock(id, stock))
 })
 
-export default connect(undefined, mapDispatchToProps)(withStyles(styles)(CreateRequisitionModal));
+export default connect(undefined, mapDispatchToProps)(withStyles(styles)(CreateStockModal));

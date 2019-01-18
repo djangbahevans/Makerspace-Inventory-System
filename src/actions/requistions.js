@@ -60,7 +60,7 @@ export const startEditRequisition = (id, updates) => {
     }
 }
 
-export const setRequisition = requisitions => ({
+const setRequisition = requisitions => ({
     type: 'SET_REQUISITION',
     requisitions
 });
@@ -77,7 +77,6 @@ export const startSetRequisition = () => {
                     role: requisition.role,
                     returnDate: requisition.returnDate
                 }))
-
                 dispatch(setRequisition(requisitions))
             })
     }

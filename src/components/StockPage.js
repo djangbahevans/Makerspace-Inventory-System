@@ -46,8 +46,9 @@ class StockPage extends Component {
                         <Grid container spacing={40}>
                             {this.props.stocks.map(stock => 
                                 <Stock
-                                    key={stock.name}
+                                    key={stock.id}
                                     image={`./img/${stock.name.toLowerCase()}.jpg`}
+                                    id={stock.id}
                                     title={stock.name}
                                     header={stock.name}
                                     quantity={stock.quantity}

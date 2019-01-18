@@ -6,7 +6,7 @@ const stockReducer = (state = [], action) => {
             return state.filter(({ name }) => name !== action.name);
         case 'EDIT_STOCK':
             return state.map((stock) => {
-                if (stock.name === action.name) {
+                if (stock.id === action.id) {
                     return {
                         ...stock,
                         ...action.updates

@@ -25,6 +25,7 @@ class Stock extends Component {
             <Grid item xs={3}>
                 {this.state.editModalOpen && <CreateStockModal
                     edit
+                    id={this.props.id}
                     name={this.props.title}
                     quantity={this.props.quantity}
                     numberInStock={this.props.numberInStock}

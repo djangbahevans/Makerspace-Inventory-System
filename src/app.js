@@ -45,7 +45,4 @@ const start = () => {
 
 ReactDOM.render(<p>Loading...</p>, document.getElementById('app'));
 
-start()
-// store.dispatch(startSetStock())
-//     .then(() => store.dispatch(startSetRequisition()).then(() => ReactDOM.render(routes, document.getElementById('app'))))
-//     .catch(() => <p>Failed to get data</p>)
+start();

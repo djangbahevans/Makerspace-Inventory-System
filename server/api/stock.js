@@ -23,10 +23,9 @@ router.post('/', async (req, res) => {
 // Edit stock
 router.post('/:id', async (req, res) => {
     const { id } = req.params;
-    console.log(id)
-    const { name, quantity, numberInStock } = req.body;
-    let stock = await Stock.findByIdAndUpdate(id, {
-        name, quantity, numberInStock
+    const { quantity, numberInStock } = req.body;
+    const stock = await Stock.findByIdAndUpdate(id, {
+        quantity, numberInStock
     });
     if (stock) return res.send(stock)
 });
