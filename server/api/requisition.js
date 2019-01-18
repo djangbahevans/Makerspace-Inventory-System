@@ -11,6 +11,8 @@ router.get('/', async (req, res) => {
 // Save requisition to db
 router.post('/', async (req, res) => {
     const { name, role, item, returnDate } = req.body;
+    // console.log(returnDate);
+    // returnDate = returnDate.toDate();
     let requisition = new Requisition({
         name,
         role,

@@ -15,7 +15,7 @@ class RequisitionTableRow extends Component {
                 <TableCell>{this.props.name}</TableCell>
                 <TableCell>{this.props.role}</TableCell>
                 <TableCell>{this.props.item}</TableCell>
-                <TableCell>{this.props.returnDate}</TableCell>
+                <TableCell>{this.props.returnDate.format('DD-MM-YYYY')}</TableCell>
                 <TableCell>
                     <IconButton aria-label="Edit" onClick={this.props.handleEdit(this.props)} onClose={this.props.onClose}>
                         <EditIcon />

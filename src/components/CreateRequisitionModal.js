@@ -35,7 +35,9 @@ class CreateRequisitionModal extends React.Component {
         name: this.props.name ? this.props.name : '',
         role: this.props.role ? this.props.role : '',
         item: this.props.item ? this.props.item : '',
-        returnDate: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'),
+        // returnDate: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'),
+        returnDate: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY') : moment(),
+        returnDateText: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'),
         dateError: false,
     }
 
@@ -44,7 +46,7 @@ class CreateRequisitionModal extends React.Component {
             const returnDate = moment(event.target.value, moment.ISO_8601);
             const today = moment(moment().format('DD MM YYYY'), 'DD MM YYYY')
             if (returnDate.diff(today) < 0) return this.setState({ dateError: true })
-            else this.setState({ dateError: false })
+            else return this.setState({ dateError: false, returnDate })
         }
         this.setState({
             [name]: event.target.value
@@ -52,9 +54,8 @@ class CreateRequisitionModal extends React.Component {
     }
 
     handleAccept = () => {
-        const { id, name, role, item } = this.state;
-        let returnDate = moment(this.state.returnDate, moment.ISO_8601);
-
+        const { id, name, role, item, returnDate } = this.state;
+        // let returnDate = moment(this.state.returnDate, moment.ISO_8601);
         const today = moment(moment().format('DD MM YYYY'), 'DD MM YYYY')
         if (name && item && returnDate.diff(today, 'days') >= 0) {
             this.props.onAccept({
@@ -62,7 +63,7 @@ class CreateRequisitionModal extends React.Component {
                 name,
                 role,
                 item,
-                returnDate: returnDate.format('DD-MM-YYYY')
+                returnDate
             }, this.props.edit);
             this.props.onClose()
         }
@@ -70,6 +71,7 @@ class CreateRequisitionModal extends React.Component {
 
     render = () => {
         const { classes } = this.props
+        
         return (
             <Modal
                 open
@@ -115,7 +117,7 @@ class CreateRequisitionModal extends React.Component {
                             label="Return Date"
                             type="date"
                             className={classes.textField}
-                            value={this.state.returnDate}
+                            value={this.state.returnDate.format('YYYY-MM-DD')}
                             onChange={this.handleChange('returnDate')}
                             margin="normal"
                             fullWidth

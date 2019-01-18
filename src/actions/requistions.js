@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import qs from 'qs';
+import moment from 'moment';
 
 
 const addRequisition = ({ id, name, role = '', item, returnDate }) => ({
@@ -16,13 +17,14 @@ const addRequisition = ({ id, name, role = '', item, returnDate }) => ({
 export const startAddRequisition = requisitionData => {
     return dispatch => {
         const { name, role, item, returnDate } = requisitionData;
+        const convertedReturnDate = returnDate.toDate()
         const config = {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }
         return Axios.post('http://localhost:8080/api/requisition', qs.stringify({
-            name, role, item, returnDate
+            name, role, item, returnDate: convertedReturnDate
         }), config).then(({ data }) => {
             dispatch(addRequisition({ id: data._id, name, role, item, returnDate }))
         })
@@ -55,7 +57,7 @@ export const startEditRequisition = (id, updates) => {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         }
-        return Axios.post(`http://localhost:8080/api/requisition/${id}`, qs.stringify(updates), config)
+        return Axios.post(`http://localhost:8080/api/requisition/${id}`, qs.stringify({ ...updates, returnDate: updates.returnDate.toDate() }), config)
             .then(() => dispatch(editRequisition(id, updates)))
     }
 }
@@ -75,9 +77,10 @@ export const startSetRequisition = () => {
                     name: requisition.name,
                     item: requisition.item,
                     role: requisition.role,
-                    returnDate: requisition.returnDate
-                }))
-                dispatch(setRequisition(requisitions))
+                    returnDate: moment(requisition.returnDate)
+                }));
+
+                dispatch(setRequisition(requisitions));
             })
     }
 }
