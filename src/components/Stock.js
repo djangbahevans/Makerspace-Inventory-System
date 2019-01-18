@@ -1,4 +1,4 @@
-import { Card, CardActionArea, CardContent, CardMedia, Grid, Typography, withStyles, CardActions, Button } from "@material-ui/core";
+import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Grid, Typography, withStyles } from "@material-ui/core";
 import React, { Component } from 'react';
 import CreateStockModal from "./CreateStockModal";
 
@@ -50,7 +50,6 @@ class Stock extends Component {
                     <CardActions>
                         <Button size="small" color="primary" fullWidth onClick={() => {this.setState({ editModalOpen: true })}}>
                             Edit</Button>
-                    {/* TODO: Add edit button functionality */}
                     </CardActions>
                 </Card>
             </Grid >

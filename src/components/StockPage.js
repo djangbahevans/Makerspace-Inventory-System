@@ -1,9 +1,9 @@
 import { CssBaseline, Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PermanentDrawer from './PermanentDrawer';
 import Stock from './Stock';
-import { connect } from 'react-redux';
 
 
 const styles = theme => ({
@@ -46,7 +46,7 @@ class StockPage extends Component {
                         <Grid container spacing={40}>
                             {this.props.stocks.map(stock => 
                                 <Stock
-                                    key={stock.id}
+                                    key={stock.name}
                                     image={`./img/${stock.name.toLowerCase()}.jpg`}
                                     title={stock.name}
                                     header={stock.name}

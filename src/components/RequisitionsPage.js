@@ -1,7 +1,7 @@
 import { Badge, Button, CssBaseline, Divider, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from "@material-ui/core";
 import React from 'react';
 import { connect } from 'react-redux';
-import { addRequisition, editRequisition, deleteRequisition } from "../actions/requistions";
+import { startAddRequisition, startDeleteRequisition, startEditRequisition } from "../actions/requistions";
 import CreateRequisitionModal from "./CreateRequisitionModal";
 import PermanentDrawer from "./PermanentDrawer";
 import RequisitionTableRow from "./RequisitionTableRow";
@@ -70,11 +70,11 @@ class RequistionsPage extends React.Component {
 
 
     handleAccept = ({ id, name, role, item, returnDate }, edit) => {
-        if (edit) return this.props.editRequisition(id, { role, item, returnDate })
-        this.props.addRequisition({ name, role, item, returnDate });
+        if (edit) return this.props.startEditRequisition(id, { role, item, returnDate })
+        this.props.startAddRequisition({ name, role, item, returnDate });
     }
 
-    handleDelete = id => this.props.deleteRequisition(id)
+    handleDelete = id => this.props.startDeleteRequisition(id)
 
     render() {
         const { classes } = this.props;
@@ -133,7 +133,6 @@ class RequistionsPage extends React.Component {
                                             handleEdit={this.handleEdit}
                                             handleDelete={this.handleDelete} />
                                     ))}
-                                    {/* TODO: Add Remove cell functionality */}
                                 </TableBody>
                             </Table>
                         </div>
@@ -145,9 +144,9 @@ class RequistionsPage extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-    addRequisition: requisition => dispatch(addRequisition(requisition)),
-    editRequisition: (id, requisition) => dispatch(editRequisition(id, requisition)),
-    deleteRequisition: id => dispatch(deleteRequisition(id))
+    startAddRequisition: requisition => dispatch(startAddRequisition(requisition)),
+    startEditRequisition: (id, requisition) => dispatch(startEditRequisition(id, requisition)),
+    startDeleteRequisition: id => dispatch(startDeleteRequisition(id))
 })
 const mapStateToProps = ({ requisitions }) => ({ requisitions })
 

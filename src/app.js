@@ -9,15 +9,16 @@ import NotFoundPage from './components/NotFoundPage';
 import Requisitions from './components/RequisitionsPage';
 import Stocks from './components/StockPage';
 import configureStore from './store/configureStore';
-import { addRequisition } from './actions/requistions';
+import { startSetStock, addStock } from './actions/stocks';
+import { startSetRequisition } from './actions/requistions';
 // import { MuiThemeProvider } from '@material-ui/core/styles';
 // import theme from './theme/theme';
 
 const store = configureStore()
 
-store.subscribe(() => {
-    console.log(store.getState());
-});
+// store.subscribe(() => {
+//     console.log(store.getState());
+// });
 
 const routes = (
     <Provider store={store}>
@@ -36,4 +37,15 @@ const routes = (
     </ Provider>
 )
 
-ReactDOM.render(routes, document.getElementById('app'));
+const start = () => {
+    store.dispatch(startSetStock());
+    store.dispatch(startSetRequisition());
+    ReactDOM.render(routes, document.getElementById('app'))
+}
+
+ReactDOM.render(<p>Loading...</p>, document.getElementById('app'));
+
+start()
+// store.dispatch(startSetStock())
+//     .then(() => store.dispatch(startSetRequisition()).then(() => ReactDOM.render(routes, document.getElementById('app'))))
+//     .catch(() => <p>Failed to get data</p>)

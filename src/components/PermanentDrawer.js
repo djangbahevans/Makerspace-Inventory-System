@@ -18,9 +18,9 @@ import ReportIcon from '@material-ui/icons/Description';
 import SearchIcon from '@material-ui/icons/Search';
 import StoreIcon from '@material-ui/icons/Store';
 import React, { Component } from 'react';
-import CreateStockModal from './CreateStockModal';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import { addStock } from '../actions/stocks';
+import CreateStockModal from './CreateStockModal';
 
 const drawerWidth = 240;
 
@@ -103,8 +103,6 @@ class PermanentDrawerLeft extends Component {
     handleClose = () => this.setState({ modalOpen: false })
 
     handleOpen = () => this.setState({ modalOpen: true })
-
-    // handleStockAdd = ({ name, quantity, numberInStock }) => this.props.addStock({ name, quantity, numberInStock})
 
     render() {
         const { classes } = this.props;

@@ -1,23 +1,63 @@
-import uuid from 'uuid';
+import Axios from 'axios';
+import qs from 'qs';
 
-export const addStock = ({ name, quantity, numberInStock }) => ({
+const addStock = stock => ({
     type: 'ADD_STOCK',
-    stock: {
-        id: uuid(),
-        name,
-        quantity,
-        numberInStock
+    stock
+});
+
+export const startAddStock = stockData => {
+    return dispatch => {
+        const { name, quantity, numberInStock } = stockData
+        const stock = { name, quantity, numberInStock };
+        const config = {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }
+        return Axios.post('http://localhost:8080/api/stock', qs.stringify({
+            name, quantity, numberInStock
+        }), config).then(({ data }) => {
+            dispatch(addStock({ id: data._id, ...stock }))
+        });
     }
-})
+}
 
-export const removeStock = ({ id }) => ({
+const removeStock = ({ name }) => ({
     type: 'REMOVE_STOCK',
-    id
-})
+    name
+});
 
-// TODO: Add edit stock
-export const editStock = (id, updates) => ({
+
+const editStock = (name, updates) => ({
     type: 'EDIT_STOCK',
-    id,
+    name,
     updates
-})
+});
+
+export const startEditStock = (id, updates) => {
+    return dispatch => {
+        const config = {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }
+        return Axios.post(`http://localhost:8080/api/stock/${id}`, qs.stringify(updates), config)
+            .then(() => dispatch(editStock(name, updates)))
+    }
+}
+
+export const setStock = stocks => ({
+    type: 'SET_STOCK',
+    stocks
+});
+
+export const startSetStock = () => {
+    return dispatch => {
+        return Axios.get('http://localhost:8080/api/stock/').then(({ data }) => {
+            // const stocks = [];
+            // data.map(stock => stocks.push(stock))
+            dispatch(setStock(data))
+        }).catch((err) => console.log(err))
+    }
+}

@@ -115,7 +115,7 @@ class DashboardPage extends Component {
                                             {this.props.stocks.map((row, idx) => {
                                                 if (idx < 3)
                                                     return (
-                                                        <TableRow key={row.id}>
+                                                        <TableRow key={row.name}>
                                                             <TableCell>{row.name}</TableCell>
                                                             <TableCell>{row.quantity}</TableCell>
                                                             <TableCell>{row.numberInStock}</TableCell>

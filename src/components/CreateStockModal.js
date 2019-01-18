@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
+import { Button, Modal, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import moment from 'moment';
-import { Typography, TextField, Modal, Button } from '@material-ui/core';
-import { connect } from 'react-redux'
-import { addStock, editStock } from '../actions/stocks';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { startAddStock, startEditStock } from '../actions/stocks';
 
 
 function getModalStyle() {
@@ -33,6 +32,7 @@ const styles = theme => ({
 
 class CreateRequisitionModal extends Component {
     state = {
+        id: '',
         name: this.props.name ? this.props.name : '',
         quantity: this.props.quantity ? this.props.quantity : 1,
         numberInStock: this.props.numberInStock ? this.props.numberInStock : 0,
@@ -55,17 +55,18 @@ class CreateRequisitionModal extends Component {
     }
 
     handleAccept = () => {
-        const { name, quantity, numberInStock } = this.state;
-        if (this.props.edit) return
-        if (name) {
-            this.props.addStock({ name, quantity, numberInStock })
-            this.props.onClose()
+        const { id, name, quantity, numberInStock } = this.state;
+        if (this.props.edit) {
+            this.props.startEditStock(id, { name, quantity, numberInStock })
         }
+        if (name) {
+            this.props.startAddStock({ id, name, quantity, numberInStock })
+        }
+        this.props.onClose()
     }
 
     render = () => {
         const { classes } = this.props
-        console.log(this.props.edit)
         return (
             <Modal
                 open
@@ -125,8 +126,8 @@ class CreateRequisitionModal extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-    addStock: stock => dispatch(addStock(stock)),
-    editStock: (id, stock) => dispatch(editStock(id, stock))
+    startAddStock: stock => dispatch(startAddStock(stock)),
+    startEditStock: (id, stock) => dispatch(startEditStock(id, stock))
 })
 
 export default connect(undefined, mapDispatchToProps)(withStyles(styles)(CreateRequisitionModal));

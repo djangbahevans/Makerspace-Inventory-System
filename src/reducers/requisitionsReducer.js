@@ -8,7 +8,7 @@ const defaultRequisitions = [
     createRequisition('Prince Banini', 'Technical Associate', 'Arduino', '11-02-2019'),
 ];
 
-const requisitionsReducer = (state = defaultRequisitions, action) => {
+const requisitionsReducer = (state = [], action) => {
     switch (action.type) {
         case 'ADD_REQUISITION':
             return [...state, action.requisition]
@@ -24,6 +24,8 @@ const requisitionsReducer = (state = defaultRequisitions, action) => {
                 }
                 else return requisition
             });
+        case 'SET_REQUISITION':
+            return action.requisitions
         default:
             return state;
     }
