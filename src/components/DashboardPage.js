@@ -1,10 +1,12 @@
-import { Badge, Button, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
+import { Badge, Button, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, CircularProgress } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
 import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PermanentDrawer from './PermanentDrawer';
+import { startSetStock } from '../actions/stocks';
+import { startSetRequisition } from '../actions/requistions';
 
 
 const styles = theme => ({
@@ -33,13 +35,29 @@ const styles = theme => ({
         right: '40px'
     },
     table: {
-        padding: '30px'
-    }
+        padding: '30px',
+        position: 'relative'
+    },
+    progress: {
+        margin: theme.spacing.unit * 2,
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+    },
 });
 
 class DashboardPage extends Component {
     state = {
-        stocks: this.props.stocks
+        stocks: this.props.stocks,
+        stocksLoaded: false,
+        requisitionsLoaded: false,
+    }
+
+    componentDidMount = () => {
+        if (this.props.stocks.length === 0) this.props.loadStocks().then(() => this.setState({ stocksLoaded: true }));
+        else this.setState({ stocksLoaded: true })
+        if (this.props.requisitions.length === 0) this.props.loadRequisitions().then(() => this.setState({ requisitionsLoaded: true }));
+        else this.setState({ requisitionsLoaded: true })
     }
 
     handleSeeAll = name => () => this.props.history.push(name)
@@ -68,7 +86,8 @@ class DashboardPage extends Component {
                                 </Grid>
                                 <Divider variant='middle' />
                                 <div className={classes.table}>
-                                    <Table padding='dense'>
+                                    {!this.state.stocksLoaded && <CircularProgress className={classes.progress} />}
+                                    {this.state.stocksLoaded && <Table padding='dense'>
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell>Name</TableCell>
@@ -83,11 +102,11 @@ class DashboardPage extends Component {
                                                     <TableCell>{row.name}</TableCell>
                                                     <TableCell>{row.role}</TableCell>
                                                     <TableCell>{row.item}</TableCell>
-                                                    <TableCell>{row.returnDate}</TableCell>
+                                                    <TableCell>{row.returnDate.format('DD-MM-YYYY')}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>
-                                    </Table>
+                                    </Table>}
                                 </div>
                             </Paper>
                         </Grid>
@@ -103,7 +122,8 @@ class DashboardPage extends Component {
                                 </Grid>
                                 <Divider variant='middle' />
                                 <div className={classes.table}>
-                                    <Table padding='dense'>
+                                    {!this.state.requisitionsLoaded && <CircularProgress className={classes.progress} />}
+                                    {this.state.requisitionsLoaded && <Table padding='dense'>
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell>Item</TableCell>
@@ -123,7 +143,7 @@ class DashboardPage extends Component {
                                                     );
                                             })}
                                         </TableBody>
-                                    </Table>
+                                    </Table>}
                                 </div>
                             </Paper>
                         </Grid>
@@ -139,4 +159,11 @@ class DashboardPage extends Component {
     }
 }
 
-export default connect(({ requisitions, stocks }) => ({ requisitions, stocks }))(withStyles(styles)(DashboardPage))
+const mapStateToProps = ({ requisitions, stocks }) => ({ requisitions, stocks });
+
+const mapDispatchToProps = dispatch => ({
+    loadStocks: () => dispatch(startSetStock()),
+    loadRequisitions: () => dispatch(startSetRequisition())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(DashboardPage))

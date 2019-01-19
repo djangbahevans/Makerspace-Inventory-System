@@ -1,7 +1,7 @@
-import { Badge, Button, CssBaseline, Divider, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from "@material-ui/core";
+import { Badge, Button, CssBaseline, Divider, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles, CircularProgress } from "@material-ui/core";
 import React from 'react';
 import { connect } from 'react-redux';
-import { startAddRequisition, startDeleteRequisition, startEditRequisition } from "../actions/requistions";
+import { startAddRequisition, startDeleteRequisition, startEditRequisition, startSetRequisition } from "../actions/requistions";
 import CreateRequisitionModal from "./CreateRequisitionModal";
 import PermanentDrawer from "./PermanentDrawer";
 import RequisitionTableRow from "./RequisitionTableRow";
@@ -35,6 +35,12 @@ const styles = theme => ({
     table: {
         padding: '30px'
     },
+    progress: {
+        margin: theme.spacing.unit * 2,
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+    },
 });
 
 class RequistionsPage extends React.Component {
@@ -45,14 +51,20 @@ class RequistionsPage extends React.Component {
         name: '',
         role: '',
         item: '',
-        returnDate: ''
+        returnDate: '',
+        requisitionsLoaded: false
     }
 
     requisitions = this.props.requisitions
 
+    componentDidMount = () => {
+        if (this.props.requisitions.length === 0) this.props.loadRequisitions().then(() => this.setState({ requisitionsLoaded: true }));
+        else this.setState({ requisitionsLoaded: true })
+    }
+
     handleOpen = () => this.setState({ createModalOpen: true });
 
-    handleEdit = ({id, name, role, item, returnDate }) => () => {
+    handleEdit = ({ id, name, role, item, returnDate }) => () => {
         this.setState({
             editModalOpen: true,
             id,
@@ -94,7 +106,8 @@ class RequistionsPage extends React.Component {
                         role={this.state.role}
                         returnDate={this.state.returnDate}
                         item={this.state.item} />}
-                    <Paper>
+                    {!this.state.requisitionsLoaded && <CircularProgress className={classes.progress} />}
+                    {this.state.requisitionsLoaded && <Paper>
                         <Grid container justify='space-between' alignItems='center'>
                             <Grid item>
                                 <Badge badgeContent={this.props.requisitions.length} color='primary' className={classes.badge}>
@@ -136,7 +149,7 @@ class RequistionsPage extends React.Component {
                                 </TableBody>
                             </Table>
                         </div>
-                    </Paper>
+                    </Paper>}
                 </main>
             </div>
         );
@@ -146,7 +159,8 @@ class RequistionsPage extends React.Component {
 const mapDispatchToProps = dispatch => ({
     startAddRequisition: requisition => dispatch(startAddRequisition(requisition)),
     startEditRequisition: (id, requisition) => dispatch(startEditRequisition(id, requisition)),
-    startDeleteRequisition: id => dispatch(startDeleteRequisition(id))
+    startDeleteRequisition: id => dispatch(startDeleteRequisition(id)),
+    loadRequisitions: () => dispatch(startSetRequisition())
 })
 const mapStateToProps = ({ requisitions }) => ({ requisitions })
 

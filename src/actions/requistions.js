@@ -26,8 +26,8 @@ export const startAddRequisition = requisitionData => {
         return Axios.post('http://localhost:8080/api/requisition', qs.stringify({
             name, role, item, returnDate: convertedReturnDate
         }), config).then(({ data }) => {
-            dispatch(addRequisition({ id: data._id, name, role, item, returnDate }))
-        })
+            dispatch(addRequisition({ id: data._id, name, role, item, returnDate }));
+        });
     }
 }
 

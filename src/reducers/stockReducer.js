@@ -2,6 +2,8 @@ const stockReducer = (state = [], action) => {
     switch (action.type) {
         case 'ADD_STOCK':
             return [...state, action.stock];
+        case 'GET_STOCKS':
+            return [...state, ...action.stocks]
         case 'REMOVE_STOCK':
             return state.filter(({ name }) => name !== action.name);
         case 'EDIT_STOCK':

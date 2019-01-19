@@ -5,7 +5,6 @@ const RequisitionSchema = new Schema({
     name: {
         type: String,
         required: true,
-        unique: true
     },
     role: {
         type: String
@@ -16,7 +15,6 @@ const RequisitionSchema = new Schema({
     },
     returnDate: {
         type: Date,
-        // type: String,
         required: true,
         min: 0
     },
