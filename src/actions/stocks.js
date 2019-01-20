@@ -43,7 +43,7 @@ const removeStock = ({ name }) => ({
     name
 });
 
-const editStock = (id, updates) => ({
+export const editStock = (id, updates) => ({
     type: 'EDIT_STOCK',
     id,
     updates
@@ -72,6 +72,6 @@ export const startSetStock = () => {
             const stocks = [];
             data.map(stock => stocks.push({ id: stock._id, ...stock }));
             dispatch(setStock(stocks));
-        }));
+        });
     };
 };

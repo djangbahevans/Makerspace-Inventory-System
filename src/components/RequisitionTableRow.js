@@ -8,7 +8,7 @@ class RequisitionTableRow extends Component {
     state = {
         editModalOpen: true
     }
-
+    
     render() {
         return (
             <TableRow>

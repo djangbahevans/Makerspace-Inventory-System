@@ -1,6 +1,7 @@
 import Axios from 'axios';
 import qs from 'qs';
 import moment from 'moment';
+import { editStock } from './stocks';
 
 
 const addRequisition = ({ id, name, role = '', item, returnDate }) => ({
@@ -14,7 +15,7 @@ const addRequisition = ({ id, name, role = '', item, returnDate }) => ({
     }
 });
 
-export const startAddRequisition = requisitionData => {
+export const startAddRequisition = (requisitionData, cb) => {
     return dispatch => {
         const { name, role, item, returnDate } = requisitionData;
         const convertedReturnDate = returnDate.toDate()
@@ -26,7 +27,16 @@ export const startAddRequisition = requisitionData => {
         return Axios.post('http://localhost:8080/api/requisition', qs.stringify({
             name, role, item, returnDate: convertedReturnDate
         }), config).then(({ data }) => {
-            dispatch(addRequisition({ id: data._id, name, role, item, returnDate }));
+            const { error } = data;
+            if (!error) {
+                let { name, role, item, returnDate } = data.requisition
+                const id = data.requisition._id
+                const { _id, ...stock } = data.stock
+                returnDate = moment(returnDate)
+                dispatch(editStock(_id, stock))
+                return dispatch(addRequisition({ id, name, role, item, returnDate }))
+            };
+            return cb(error);
         });
     }
 }
@@ -39,7 +49,11 @@ const deleteRequisition = id => ({
 export const startDeleteRequisition = (id) => {
     return dispatch => {
         return Axios.delete(`http://localhost:8080/api/requisition/${id}`)
-            .then(() => dispatch(deleteRequisition(id)));
+            .then(({ data }) => {
+                dispatch(deleteRequisition(id))
+                console.log(data)
+                dispatch(editStock(data._id, data))
+            });
     }
 }
 

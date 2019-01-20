@@ -10,8 +10,9 @@ const RequisitionSchema = new Schema({
         type: String
     },
     item: {
-        type: String,
+        type: Schema.Types.ObjectId,
         required: true,
+        ref: 'Stock'
     },
     returnDate: {
         type: Date,

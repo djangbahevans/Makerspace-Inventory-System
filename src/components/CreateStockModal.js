@@ -62,6 +62,7 @@ class CreateStockModal extends Component {
         else if (name) {
             this.props.startAddStock({ id, name, quantity, numberInStock })
         }
+        this.props.history.push('/stock');
         this.props.onClose()
     }
 

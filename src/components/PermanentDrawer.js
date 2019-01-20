@@ -96,7 +96,6 @@ class PermanentDrawerLeft extends Component {
     }
 
     handleClose = () => {
-        this.props.history.push('/stock')
         this.setState({ modalOpen: false })
     }
 
@@ -108,7 +107,10 @@ class PermanentDrawerLeft extends Component {
         return (
             <div>
                 <CssBaseline />
-                {this.state.modalOpen && <CreateStockModal onAccept={this.handleStockAdd} onClose={this.handleClose} />}
+                {this.state.modalOpen && <CreateStockModal
+                    onAccept={this.handleStockAdd}
+                    onClose={this.handleClose}
+                    history={this.props.history} />}
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
                         <div className={classes.search}>

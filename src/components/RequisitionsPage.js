@@ -80,10 +80,10 @@ class RequistionsPage extends React.Component {
         editModalOpen: false
     })
 
-
+    // TODO: remove this function
     handleAccept = ({ id, name, role, item, returnDate }, edit) => {
         if (edit) return this.props.startEditRequisition(id, { role, item, returnDate })
-        this.props.startAddRequisition({ name, role, item, returnDate });
+        this.props.startAddRequisition({ name, role, item, returnDate }, error => this.setState({ error }));
     }
 
     handleDelete = id => this.props.startDeleteRequisition(id)
@@ -97,10 +97,9 @@ class RequistionsPage extends React.Component {
                 <PermanentDrawer history={this.props.history} />
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    {this.state.createModalOpen && <CreateRequisitionModal onClose={this.handleClose} onAccept={this.handleAccept} />}
+                    {this.state.createModalOpen && <CreateRequisitionModal onClose={this.handleClose} />}
                     {this.state.editModalOpen && <CreateRequisitionModal edit
                         onClose={this.handleClose}
-                        onAccept={this.handleAccept}
                         id={this.state.id}
                         name={this.state.name}
                         role={this.state.role}
@@ -157,7 +156,7 @@ class RequistionsPage extends React.Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-    startAddRequisition: requisition => dispatch(startAddRequisition(requisition)),
+    startAddRequisition: (requisition, cb) => dispatch(startAddRequisition(requisition, cb)),
     startEditRequisition: (id, requisition) => dispatch(startEditRequisition(id, requisition)),
     startDeleteRequisition: id => dispatch(startDeleteRequisition(id)),
     loadRequisitions: () => dispatch(startSetRequisition())

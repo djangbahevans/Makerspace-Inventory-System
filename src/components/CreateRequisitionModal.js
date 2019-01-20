@@ -2,6 +2,8 @@ import { Button, Modal, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import React from 'react';
+import { connect } from 'react-redux'
+import { startAddRequisition, startEditRequisition } from '../actions/requistions';
 
 
 function getModalStyle() {
@@ -35,10 +37,10 @@ class CreateRequisitionModal extends React.Component {
         name: this.props.name ? this.props.name : '',
         role: this.props.role ? this.props.role : '',
         item: this.props.item ? this.props.item : '',
-        // returnDate: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'),
         returnDate: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY') : moment(),
         returnDateText: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'),
         dateError: false,
+        error: ''
     }
 
     handleChange = name => event => {
@@ -47,7 +49,8 @@ class CreateRequisitionModal extends React.Component {
             const today = moment(moment().format('DD MM YYYY'), 'DD MM YYYY')
             if (returnDate.diff(today) < 0) return this.setState({ dateError: true })
             else return this.setState({ dateError: false, returnDate })
-        }
+        };
+        if (name == 'item') this.setState({ error: '' })
         this.setState({
             [name]: event.target.value
         });
@@ -57,21 +60,20 @@ class CreateRequisitionModal extends React.Component {
         const { id, name, role, item, returnDate } = this.state;
         // let returnDate = moment(this.state.returnDate, moment.ISO_8601);
         const today = moment(moment().format('DD MM YYYY'), 'DD MM YYYY')
+        let error;
         if (name && item && returnDate.diff(today, 'days') >= 0) {
-            this.props.onAccept({
-                id,
-                name,
-                role,
-                item,
-                returnDate
-            }, this.props.edit);
-            this.props.onClose()
+            if (this.props.edit) return this.props.startEditRequisition(id, { role, item, returnDate })
+            else this.props.startAddRequisition({ name, role, item, returnDate }, err => {
+                error = err
+                this.setState({ error })
+            }).then(() => { if (!error) this.props.onClose(); });
+
         }
     }
 
     render = () => {
         const { classes } = this.props
-        
+
         return (
             <Modal
                 open
@@ -79,6 +81,7 @@ class CreateRequisitionModal extends React.Component {
             >
                 <div style={getModalStyle()} className={classes.paper}>
                     <Typography variant="h6" gutterBottom id="modal-title" align='center'>{this.props.edit ? 'Edit Requisition' : 'Add New Requisition'}</Typography>
+                    {this.state.error && <Typography variant="body1" color="error" id="modal-title" align='center'>{this.state.error}</Typography>}
                     <form>
                         <TextField
                             label="Name"
@@ -138,4 +141,9 @@ class CreateRequisitionModal extends React.Component {
     }
 }
 
-export default withStyles(styles)(CreateRequisitionModal);
+const mapDispatchToProps = dispatch => ({
+    startEditRequisition: (id, requisition) => dispatch(startEditRequisition(id, requisition)),
+    startAddRequisition: (requisition, cb) => dispatch(startAddRequisition(requisition, cb)),
+});
+
+export default connect(undefined, mapDispatchToProps)(withStyles(styles)(CreateRequisitionModal));
