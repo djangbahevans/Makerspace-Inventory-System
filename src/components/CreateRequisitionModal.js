@@ -2,8 +2,11 @@ import { Button, Modal, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import React from 'react';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import { startAddRequisition, startEditRequisition } from '../actions/requistions';
+import capitalizeWords from '../helpers/capitalizeWords';
+import getNames from '../helpers/getNames';
+import AutoSuggest from './Autosuggest';
 
 
 function getModalStyle() {
@@ -40,25 +43,30 @@ class CreateRequisitionModal extends React.Component {
         returnDate: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY') : moment(),
         returnDateText: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'),
         dateError: false,
-        error: ''
+        error: '',
+        stocks: []
     }
+
+    componentDidMount = () => getNames(stocks => this.setState({ stocks: stocks.map((stock => ({ label: stock }))) }))
 
     handleChange = name => event => {
         if (name === 'returnDate') {
             const returnDate = moment(event.target.value, moment.ISO_8601);
             const today = moment(moment().format('DD MM YYYY'), 'DD MM YYYY')
-            if (returnDate.diff(today) < 0) return this.setState({ dateError: true })
-            else return this.setState({ dateError: false, returnDate })
+            if (returnDate.diff(today) < 0) return this.setState({ dateError: true, error: 'The date must be today or in the future' })
+            else return this.setState({ dateError: false, returnDate, error: '' })
         };
-        if (name == 'item') this.setState({ error: '' })
+        if (name == 'item') {
+            this.setState({ error: '' });
+            return this.setState({ [name]: capitalizeWords(event) })
+        }
         this.setState({
-            [name]: event.target.value
+            [name]: capitalizeWords(event.target.value)
         });
     }
 
     handleAccept = () => {
         const { id, name, role, item, returnDate } = this.state;
-        // let returnDate = moment(this.state.returnDate, moment.ISO_8601);
         const today = moment(moment().format('DD MM YYYY'), 'DD MM YYYY')
         let error;
         if (name && item && returnDate.diff(today, 'days') >= 0) {
@@ -106,7 +114,7 @@ class CreateRequisitionModal extends React.Component {
                             margin="normal"
                             fullWidth
                         />
-                        <TextField
+                        {/* <TextField
                             label="Item"
                             className={classes.textField}
                             value={this.state.item}
@@ -115,7 +123,10 @@ class CreateRequisitionModal extends React.Component {
                             fullWidth
                             required
                             error={!this.state.item}
-                        />
+                        /> */}
+                        <AutoSuggest
+                            options={this.state.stocks}
+                            onChange={this.handleChange('item')} />
                         <TextField
                             label="Return Date"
                             type="date"

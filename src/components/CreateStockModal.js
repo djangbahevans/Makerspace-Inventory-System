@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { startAddStock, startEditStock } from '../actions/stocks';
+import capitalizeWords from '../helpers/capitalizeWords';
 
 
 function getModalStyle() {
@@ -49,6 +50,7 @@ class CreateStockModal extends Component {
             if (num != event.target.value) return; // Must be an integer
             if (isNaN(num) || num < 0 || num > this.state.quantity) return; // Cannot be empty or greater than quantity
         }
+        if (name == 'name') return this.setState({ name: capitalizeWords(event.target.value) });
         this.setState({
             [name]: event.target.value
         });
@@ -110,7 +112,6 @@ class CreateStockModal extends Component {
                             type="number"
                             fullWidth
                             required
-                        // error={!this.state.numberInStock}
                         />
                         <Button
                             onClick={this.handleAccept}

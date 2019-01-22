@@ -1,3 +1,4 @@
 /node_modules/
+/daemon/
 **.jpg
-/public/bundle.js
+**.log

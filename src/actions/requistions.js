@@ -51,7 +51,6 @@ export const startDeleteRequisition = (id) => {
         return Axios.delete(`http://localhost:8080/api/requisition/${id}`)
             .then(({ data }) => {
                 dispatch(deleteRequisition(id))
-                console.log(data)
                 dispatch(editStock(data._id, data))
             });
     }

@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server.js --no-deprecation",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode=development --watch",
+    "build-prod": "webpack --mode=production",
     "devServer": "webpack-dev-server --mode=development --hot --inline"
   },
   "author": "evans djangbah",
@@ -26,15 +27,18 @@
     "express": "^4.16.4",
     "moment": "^2.23.0",
     "mongoose": "^5.4.5",
+    "morgan": "^1.9.1",
     "qs": "^6.6.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
+    "react-select": "^2.3.0",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "uuid": "^3.3.2",
-    "webpack": "^4.28.4"
+    "webpack": "^4.28.4",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-object-rest-spread": "^7.2.0",

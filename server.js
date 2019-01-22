@@ -5,28 +5,34 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const stock = require('./server/api/stock');
 const requisition = require('./server/api/requisition');
-const cors = require('cors')
+const cors = require('cors');
+const morgan = require('morgan');
+const fs = require('fs');
+const logger = require('./server/logging/logger');
 
+
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'express.log'), { flags: 'a' });
+app.use(morgan('combined', { stream: accessLogStream }))
 
 mongoose.connect('mongodb://localhost:27017/inventory', {
     useNewUrlParser: true
 })
-    .then(() => console.log('Database running'))
+    .then(() => logger.info('Database running'))
     .catch(() => {
-        console.log('Could not connect to MongoDB');
+        logger.error('Could not connect to MongoDB');
         process.abort();
     });
 
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/stock', stock);
 app.use('/api/requisition', requisition);
 
 app.use((req, res) => {
-    console.log(req.baseUrl)
+    logger.info(req.url);
     res.sendFile(
         path.join(__dirname, 'public', 'index.html')
     );
@@ -35,5 +41,5 @@ app.use((req, res) => {
 
 const PORT = 8080;
 app.listen(PORT, () => {
-    console.log('Server is up');
+    logger.info('Server is up');
 });

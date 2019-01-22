@@ -8,6 +8,13 @@ router.get('/', async (req, res) => {
     res.send(stock);
 });
 
+router.get('/names', async (req, res) => {
+    let stocks = await Stock.find({}, 'name').sort('name');
+    names = stocks.map(stock => stock.name);
+    res.send(names);
+})
+
+// Does not work. Circular references
 router.get('/:page', async (req, res) => {
     const { page } = req.params;
     let stocks = await Stock.find({}).sort('name').skip(page * 16).limit(16)
