@@ -50,26 +50,43 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     const requisition = await Requisition.findByIdAndDelete(id);
     let stock = await Stock.findById(requisition.item);
-    
+
     ++stock.numberInStock; // Increase Stock numberInStock Count
-    
+
     // Add requisition to Stock requisitionHistory
     const { _id, item, ...requisitionHistory } = requisition._doc;
     requisitionHistory.actualReturnDate = new Date();
     stock.requisitionHistory.push(requisitionHistory);
-    
+
     await stock.save();
     if (requisition) return res.send(stock);
 });
 
 // Edit requisition
+// TODO: Doesn't work properly
+// Find former item, increment count, find new item, decrement count, update requisition with new item
 router.post('/:id', async (req, res) => {
     const { id } = req.params;
     const { role, item, returnDate } = req.body;
-    const requisition = await Requisition.findByIdAndUpdate(id, {
-        role, item, returnDate
-    });
-    if (requisition) return res.send(requisition);
+    let requisition = await Requisition.findById(id);
+
+    // Increment former item
+    let oldStock = await Stock.findById(requisition.item._id)
+    ++oldStock.numberInStock
+    oldStock.save();
+
+    // Decrement current item
+    let newStock = await Stock.findOne({ name: item })
+    --newStock.numberInStock
+    await newStock.save();
+
+    // Editing requisition
+    requisition.item = newStock;
+    requisition.role = role
+    requisition.returnDate = returnDate
+    requisition.save()
+
+    return res.send({ requisition, oldStock, newStock });
 });
 
 module.exports = router;

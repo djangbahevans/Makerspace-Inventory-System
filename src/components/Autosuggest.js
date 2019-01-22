@@ -129,7 +129,7 @@ const components = {
 
 class IntegrationReactSelect extends React.Component {
     state = {
-        value: ''
+        value: {label: this.props.value}
     };
 
     handleChange = (value) => {
@@ -156,7 +156,7 @@ class IntegrationReactSelect extends React.Component {
             <div className={classes.root}>
                 <Select
                     textFieldProps={{
-                        label: 'Label',
+                        label: this.props.label,
                         InputLabelProps: {
                             shrink: true,
                         },

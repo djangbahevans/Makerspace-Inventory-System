@@ -71,11 +71,11 @@ class CreateRequisitionModal extends React.Component {
         let error;
         if (name && item && returnDate.diff(today, 'days') >= 0) {
             if (this.props.edit) return this.props.startEditRequisition(id, { role, item, returnDate })
+                .then(() => this.props.onClose())
             else this.props.startAddRequisition({ name, role, item, returnDate }, err => {
                 error = err
                 this.setState({ error })
-            }).then(() => { if (!error) this.props.onClose(); });
-
+            }).then(() => { if (!error) this.props.onClose(); })
         }
     }
 
@@ -114,19 +114,11 @@ class CreateRequisitionModal extends React.Component {
                             margin="normal"
                             fullWidth
                         />
-                        {/* <TextField
-                            label="Item"
-                            className={classes.textField}
-                            value={this.state.item}
-                            onChange={this.handleChange('item')}
-                            margin="normal"
-                            fullWidth
-                            required
-                            error={!this.state.item}
-                        /> */}
                         <AutoSuggest
                             options={this.state.stocks}
-                            onChange={this.handleChange('item')} />
+                            onChange={this.handleChange('item')}
+                            value={this.state.item}
+                            label="Item *" />
                         <TextField
                             label="Return Date"
                             type="date"

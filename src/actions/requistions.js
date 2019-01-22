@@ -71,7 +71,12 @@ export const startEditRequisition = (id, updates) => {
             }
         }
         return Axios.post(`http://localhost:8080/api/requisition/${id}`, qs.stringify({ ...updates, returnDate: updates.returnDate.toDate() }), config)
-            .then(() => dispatch(editRequisition(id, updates)))
+            .then(({ data }) => {
+                const { newStock, oldStock } = data
+                dispatch(editRequisition(id, updates));
+                dispatch(editStock(newStock._id, { numberInStock: newStock.numberInStock }))
+                dispatch(editStock(oldStock._id, { numberInStock: oldStock.numberInStock }))
+            })
     }
 }
 
