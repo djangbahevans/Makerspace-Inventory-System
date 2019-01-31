@@ -12,6 +12,6 @@ export default () => {
         stocks: stockReducer
     }), 
     composeEnhancers(applyMiddleware(thunk)));
-
+    
     return store;
 }

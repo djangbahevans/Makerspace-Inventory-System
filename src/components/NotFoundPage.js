@@ -1,7 +1,7 @@
 import { CssBaseline, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
-import PermanentDrawer from './PermanentDrawer';
+import PermanentDrawer from './Drawer';
 
 
 const styles = theme => ({

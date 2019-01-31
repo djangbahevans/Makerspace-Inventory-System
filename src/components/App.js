@@ -22,7 +22,8 @@ const App = () => (
     <Provider store={store}>
         <BrowserRouter>
             <div>
-                <CssBaseline />
+                <CssBaseline /> 
+                {/* Place Header here */}
                 <Switch>
                     <Route path='/' component={Login} exact />
                     <Route path='/dashboard' component={Dashboard} exact />

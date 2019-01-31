@@ -1,6 +1,5 @@
-import Axios from 'axios';
-import qs from 'qs';
 import moment from 'moment';
+import qs from 'qs';
 import { editStock } from './stocks';
 
 
@@ -19,14 +18,13 @@ export const startAddRequisition = (requisitionData, cb) => {
     return dispatch => {
         const { name, role, item, returnDate } = requisitionData;
         const convertedReturnDate = returnDate.toDate()
-        const config = {
+        return fetch('/api/requisition', {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        }
-        return Axios.post('http://localhost:8080/api/requisition', qs.stringify({
-            name, role, item, returnDate: convertedReturnDate
-        }), config).then(({ data }) => {
+            },
+            body: qs.stringify({ name, role, item, returnDate: convertedReturnDate })
+        }).then(response => response.json().then(data => {
             const { error } = data;
             if (!error) {
                 let { name, role, item, returnDate } = data.requisition
@@ -37,7 +35,7 @@ export const startAddRequisition = (requisitionData, cb) => {
                 return dispatch(addRequisition({ id, name, role, item, returnDate }))
             };
             return cb(error);
-        });
+        }));
     }
 }
 
@@ -48,11 +46,12 @@ const deleteRequisition = id => ({
 
 export const startDeleteRequisition = (id) => {
     return dispatch => {
-        return Axios.delete(`http://localhost:8080/api/requisition/${id}`)
-            .then(({ data }) => {
-                dispatch(deleteRequisition(id))
-                dispatch(editStock(data._id, data))
-            });
+        return fetch(`/api/requisition/${id}`, {
+            method: 'DELETE',
+        }).then(res => res.json().then(data => {
+            dispatch(deleteRequisition(id))
+            dispatch(editStock(data._id, data))
+        }))
     }
 }
 
@@ -65,18 +64,18 @@ const editRequisition = (id, updates) => ({
 
 export const startEditRequisition = (id, updates) => {
     return dispatch => {
-        const config = {
+        return fetch(`/api/requisition/${id}`, {
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        }
-        return Axios.post(`http://localhost:8080/api/requisition/${id}`, qs.stringify({ ...updates, returnDate: updates.returnDate.toDate() }), config)
-            .then(({ data }) => {
-                const { newStock, oldStock } = data
-                dispatch(editRequisition(id, updates));
-                dispatch(editStock(newStock._id, { numberInStock: newStock.numberInStock }))
-                dispatch(editStock(oldStock._id, { numberInStock: oldStock.numberInStock }))
-            })
+            },
+            body: qs.stringify({ ...updates, returnDate: updates.returnDate.toDate() })
+        }).then(res => res.json().then(data => {
+            const { newStock, oldStock } = data
+            dispatch(editRequisition(id, updates));
+            dispatch(editStock(newStock._id, { numberInStock: newStock.numberInStock }))
+            dispatch(editStock(oldStock._id, { numberInStock: oldStock.numberInStock }))
+        }))
     }
 }
 
@@ -87,18 +86,17 @@ const setRequisition = requisitions => ({
 
 export const startSetRequisition = () => {
     return dispatch => {
-        return Axios.get('http://localhost:8080/api/requisition')
-            .then(({ data }) => {
-                const requisitions = [];
-                data.map(requisition => requisitions.push({
-                    id: requisition._id,
-                    name: requisition.name,
-                    item: requisition.item,
-                    role: requisition.role,
-                    returnDate: moment(requisition.returnDate)
-                }));
+        return fetch('/api/requisition').then(res => res.json().then(data => {
+            const requisitions = [];
+            data.map(requisition => requisitions.push({
+                id: requisition._id,
+                name: requisition.name,
+                item: requisition.item,
+                role: requisition.role,
+                returnDate: moment(requisition.returnDate)
+            }));
 
-                dispatch(setRequisition(requisitions));
-            })
+            dispatch(setRequisition(requisitions));
+        }))
     }
 }

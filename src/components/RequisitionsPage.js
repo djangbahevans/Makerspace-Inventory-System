@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { startAddRequisition, startDeleteRequisition, startEditRequisition, startSetRequisition } from "../actions/requistions";
 import CreateRequisitionModal from "./CreateRequisitionModal";
-import PermanentDrawer from "./PermanentDrawer";
+import PermanentDrawer from "./Drawer";
 import RequisitionTableRow from "./RequisitionTableRow";
 
 
@@ -161,6 +161,7 @@ const mapDispatchToProps = dispatch => ({
     startDeleteRequisition: id => dispatch(startDeleteRequisition(id)),
     loadRequisitions: () => dispatch(startSetRequisition())
 })
+
 const mapStateToProps = ({ requisitions }) => ({ requisitions })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(RequistionsPage));

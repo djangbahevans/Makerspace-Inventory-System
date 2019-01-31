@@ -11,7 +11,10 @@ import TextField from '@material-ui/core/TextField';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { startLogin } from '../actions/auth';
 
+startLogin
 const styles = theme => ({
     root: {
         color: '#576271'
@@ -51,7 +54,7 @@ const styles = theme => ({
     }
 })
 
-class PaperSheet extends Component {
+class LoginPage extends Component {
     state = {
         username: '',
         password: '',
@@ -87,7 +90,7 @@ class PaperSheet extends Component {
                                     <Typography variant="h6" gutterBottom align='center' color='primary'>Kumasi Hive Makerspace</Typography>
                                     <Typography variant="subtitle1" align='center' gutterBottom>Inventory Management System</Typography>
                                     <form className={classes.form}>
-                                        <TextField 
+                                        <TextField
                                             value={this.state.username}
                                             onChange={this.handleChange('username')}
                                             fullWidth
@@ -128,4 +131,8 @@ class PaperSheet extends Component {
     }
 }
 
-export default withStyles(styles)(PaperSheet);
+const mapDispatchToProps = dispatch => ({
+    startLogin: () => dispatch(startLogin())
+})
+
+export default connect(undefined, mapDispatchToProps)(withStyles(styles)(LoginPage));

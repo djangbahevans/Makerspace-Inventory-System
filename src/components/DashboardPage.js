@@ -4,7 +4,7 @@ import Divider from '@material-ui/core/Divider';
 import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PermanentDrawer from './PermanentDrawer';
+import PermanentDrawer from './Drawer';
 import { startSetStock } from '../actions/stocks';
 import { startSetRequisition } from '../actions/requistions';
 

@@ -2,7 +2,7 @@ import { CssBaseline, Grid, CircularProgress } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PermanentDrawer from './PermanentDrawer';
+import PermanentDrawer from './Drawer';
 import Stock from './Stock';
 import { startSetStock } from '../actions/stocks';
 
@@ -101,7 +101,8 @@ class StockPage extends Component {
                                 title={stock.name}
                                 header={stock.name}
                                 quantity={stock.quantity}
-                                numberInStock={stock.numberInStock} />)}
+                                numberInStock={stock.numberInStock}
+                                history={this.props.history} />)}
                     </Grid>}
                 </main>
             </div>

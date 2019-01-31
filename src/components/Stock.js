@@ -29,7 +29,8 @@ class Stock extends Component {
                     name={this.props.title}
                     quantity={this.props.quantity}
                     numberInStock={this.props.numberInStock}
-                    onClose={this.handleClose} />}
+                    onClose={this.handleClose}
+                    history={this.props.history} />}
 
                 <Card className={classes.card}>
                     <CardActionArea>
