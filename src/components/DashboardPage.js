@@ -4,7 +4,7 @@ import Divider from '@material-ui/core/Divider';
 import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PermanentDrawer from './Drawer';
+import Drawer from './Drawer';
 import { startSetStock } from '../actions/stocks';
 import { startSetRequisition } from '../actions/requistions';
 
@@ -68,7 +68,7 @@ class DashboardPage extends Component {
         return (
             <div className={classes.root}>
                 <CssBaseline />
-                <PermanentDrawer history={this.props.history} />
+                <Drawer history={this.props.history} />
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
                     <Grid container spacing={24}>

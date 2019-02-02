@@ -1,7 +1,9 @@
 const router = require('express').Router();
 const Stock = require('../models/Stock');
+const authorize = require('../auth/authorize');
 
 
+router.use(authorize)
 // Get all stock
 router.get('/', async (req, res) => {
     let stock = await Stock.find({}).sort('name')

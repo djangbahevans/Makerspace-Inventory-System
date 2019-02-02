@@ -67,9 +67,8 @@ class CreateRequisitionModal extends React.Component {
 
     handleAccept = () => {
         const { id, name, role, item, returnDate } = this.state;
-        const today = moment(moment().format('DD MM YYYY'), 'DD MM YYYY')
         let error;
-        if (name && item && returnDate.diff(today, 'days') >= 0) {
+        if (name && item) {
             if (this.props.edit) return this.props.startEditRequisition(id, { role, item, returnDate })
                 .then(() => this.props.onClose())
             else this.props.startAddRequisition({ name, role, item, returnDate }, err => {

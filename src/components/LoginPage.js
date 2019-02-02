@@ -70,7 +70,7 @@ class LoginPage extends Component {
     }
 
     handleSubmit = () => {
-        this.props.history.push('/dashboard')
+        this.props.startLogin({ username: this.state.username, password: this.state.password })
     }
 
     render() {
@@ -132,7 +132,7 @@ class LoginPage extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-    startLogin: () => dispatch(startLogin())
+    startLogin: user => dispatch(startLogin(user))
 })
 
 export default connect(undefined, mapDispatchToProps)(withStyles(styles)(LoginPage));

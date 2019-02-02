@@ -1,7 +1,7 @@
 import { CssBaseline, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
-import PermanentDrawer from './Drawer';
+import Drawer from './Drawer';
 
 
 const styles = theme => ({
@@ -28,7 +28,7 @@ const NotFoundPage = props => {
     return (
         <div className={classes.root}>
             <CssBaseline />
-            <PermanentDrawer history={props.history} />
+            <Drawer history={props.history} />
             <div className={classes.content}>
                 <div className={classes.toolbar} />
                 <Typography variant='h1' className={classes.mainContent}>404 Not found</Typography>

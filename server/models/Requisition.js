@@ -14,10 +14,13 @@ const RequisitionSchema = new Schema({
         required: true,
         ref: 'Stock'
     },
+    date: {
+        type: Date,
+        default: Date.now()
+    },
     returnDate: {
         type: Date,
         required: true,
-        min: 0
     },
 })
 

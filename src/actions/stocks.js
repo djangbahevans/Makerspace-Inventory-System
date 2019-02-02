@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import qs from 'qs';
 
 const addStock = stock => ({
@@ -10,15 +9,13 @@ export const startAddStock = stockData => {
     return dispatch => {
         const { name, quantity, numberInStock } = stockData
         const stock = { name, quantity, numberInStock };
-        const config = {
+        return fetch(`/api/stock`, {
+            method: 'POST',
+            body: qs.stringify({ name, quantity, numberInStock }),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-        };
-        return Axios.post('http://localhost:8080/api/stock', qs.stringify({
-            name, quantity, numberInStock
-        }), config).then(({ data }) => dispatch(addStock({ id: data._id, ...stock }))
-        );
+        }).then(res => res.json().then(data => dispatch(addStock({ id: data._id, ...stock }))))
     };
 };
 
@@ -52,13 +49,13 @@ export const editStock = (id, updates) => ({
 
 export const startEditStock = (id, updates) => {
     return dispatch => {
-        const config = {
+        return fetch(`/api/stock/${id}`, {
+            method: 'POST',
+            body: qs.stringify(updates),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-        };
-        return Axios.post(`/api/stock/${id}`, qs.stringify(updates), config)
-            .then(() => dispatch(editStock(id, updates)));
+        }).then(() => dispatch(editStock(id, updates)));
     };
 };
 

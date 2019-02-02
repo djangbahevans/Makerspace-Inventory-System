@@ -1,7 +1,10 @@
 const router = require('express').Router();
 const Requisition = require('../models/Requisition');
 const Stock = require('../models/Stock');
+const authorize = require('../auth/authorize');
 
+
+router.use(authorize);
 
 // Get all requisition
 router.get('/', async (req, res) => {
@@ -24,7 +27,6 @@ router.post('/', async (req, res) => {
     const { name, role, item, returnDate } = req.body;
     const stock = await Stock.findOne({ name: item }); // Ensure item exists
     if (stock) {
-        // TODO: reduce stock numberInStock if requisition goes through
         let { numberInStock } = stock;
         if (!numberInStock) return res.send({ error: 'The specified item is not in stock' });
         stock.numberInStock = --numberInStock;
