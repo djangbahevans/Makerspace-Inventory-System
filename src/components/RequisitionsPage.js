@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { startAddRequisition, startDeleteRequisition, startEditRequisition, startSetRequisition } from "../actions/requistions";
 import CreateRequisitionModal from "./CreateRequisitionModal";
-// import Drawer from "./Drawer";
+import Drawer from "./Drawer";
 import RequisitionTableRow from "./RequisitionTableRow";
 
 
@@ -94,7 +94,7 @@ class RequistionsPage extends React.Component {
         return (
             <div className={classes.root}>
                 <CssBaseline />
-                {/* <Drawer history={this.props.history} /> */}
+                <Drawer history={this.props.history} />
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
                     {this.state.createModalOpen && <CreateRequisitionModal onClose={this.handleClose} />}

@@ -141,6 +141,7 @@ class SideDrawer extends Component {
                         </div>
                         <div className={classes.grow} />
                         <Button variant='outlined' color='secondary' onClick={this.handleOpen} className={classes.stockButton}>New Stock</Button>
+                        <Button variant='outlined' color='secondary' onClick={this.props.startLogout} className={classes.stockButton}>Log out</Button>
                     </Toolbar>
                 </AppBar>
                 <Drawer

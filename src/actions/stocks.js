@@ -11,6 +11,7 @@ export const startAddStock = stockData => {
         const stock = { name, quantity, numberInStock };
         return fetch(`/api/stock`, {
             method: 'POST',
+            credentials: "same-origin",
             body: qs.stringify({ name, quantity, numberInStock }),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -26,7 +27,9 @@ const getStocks = stocks => ({
 
 export const startGetStocks = page => {
     return dispatch => {
-        return fetch(`/api/stock/${page}`).then(res =>
+        return fetch(`/api/stock/${page}`, {
+            credentials: "same-origin"
+        }).then(res =>
             res.json().then(data => {
                 const stocks = [];
                 data.map(stock => stocks.push({ id: stock._id, ...stock }));
@@ -51,6 +54,7 @@ export const startEditStock = (id, updates) => {
     return dispatch => {
         return fetch(`/api/stock/${id}`, {
             method: 'POST',
+            credentials: "same-origin",
             body: qs.stringify(updates),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -66,7 +70,9 @@ const setStock = stocks => ({
 
 export const startSetStock = () => {
     return dispatch => {
-        return fetch('/api/stock').then(res =>
+        return fetch('/api/stock', {
+            credentials: "same-origin"
+        }).then(res =>
             res.json().then((data) => {
                 const stocks = [];
                 data.map(stock => stocks.push({ id: stock._id, ...stock }));

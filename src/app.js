@@ -2,6 +2,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
+import configureStore from './store/configureStore';
+import { getUser } from './actions/auth';
 
 
-ReactDOM.render(<App />, document.getElementById('app'));
+const store = configureStore();
+
+store.dispatch(getUser()).then(() => ReactDOM.render(<App store={store} />, document.getElementById('app'))
+);

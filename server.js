@@ -20,7 +20,8 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'express.log')
 app.use(morgan('combined', { stream: accessLogStream }));
 
 // Database Connection
-mongoose.connect("mongodb://localhost:27017/inventory", {
+const URI = process.env.URI || "mongodb://localhost:27017/inventory"
+mongoose.connect(URI, {
     useNewUrlParser: true
 })
     .then(() => logger.info('Connected to  MongoDB'))
@@ -31,14 +32,12 @@ mongoose.connect("mongodb://localhost:27017/inventory", {
 
 // 3rd Party Middleware 
 app.use(helmet())
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-    secret: 'keyboard cat',
+    secret: process.env.SessionSecret || 'keyboard cat',
     resave: false,
     saveUninitialized: false,
     store: new MongoStore({ mongooseConnection: mongoose.connection })

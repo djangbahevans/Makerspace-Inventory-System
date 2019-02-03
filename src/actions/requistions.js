@@ -20,6 +20,7 @@ export const startAddRequisition = (requisitionData, cb) => {
         const convertedReturnDate = returnDate.toDate()
         return fetch('/api/requisition', {
             method: 'POST',
+            credentials: "same-origin",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -48,6 +49,7 @@ export const startDeleteRequisition = (id) => {
     return dispatch => {
         return fetch(`/api/requisition/${id}`, {
             method: 'DELETE',
+            credentials: "same-origin"
         }).then(res => res.json().then(data => {
             dispatch(deleteRequisition(id))
             dispatch(editStock(data._id, data))
@@ -66,6 +68,7 @@ export const startEditRequisition = (id, updates) => {
     return dispatch => {
         return fetch(`/api/requisition/${id}`, {
             method: 'POST',
+            credentials: "same-origin",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -86,7 +89,9 @@ const setRequisition = requisitions => ({
 
 export const startSetRequisition = () => {
     return dispatch => {
-        return fetch('/api/requisition').then(res => res.json().then(data => {
+        return fetch('/api/requisition', {
+            credentials: "same-origin"
+        }).then(res => res.json().then(data => {
             const requisitions = [];
             data.map(requisition => requisitions.push({
                 id: requisition._id,
