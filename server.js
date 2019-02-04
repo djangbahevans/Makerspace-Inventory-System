@@ -9,6 +9,7 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+const https = require('https')
 const requisition = require('./server/api/requisition');
 const stock = require('./server/api/stock');
 const logger = require('./server/logging/logger');
@@ -40,8 +41,8 @@ app.use(session({
     secret: process.env.SessionSecret || 'keyboard cat',
     resave: false,
     saveUninitialized: false,
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
-    // cookie: { secure: true  }
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    cookie: { secure: true  }
 }));
 require('./server/auth/auth')(app); // After app.use(sessions)
 
@@ -58,6 +59,9 @@ app.use((req, res) => {
 
 // Server
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
+https.createServer({
+    cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt')),
+    key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
+}, app).listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
 });
