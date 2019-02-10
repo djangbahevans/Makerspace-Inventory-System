@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
-const authorize = require('../auth/authorize')
 const User = require('../models/User');
 
 // Create new Account
