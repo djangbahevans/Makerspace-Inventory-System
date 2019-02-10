@@ -52,6 +52,8 @@ app.use('/api/requisition', requisition);
 app.use('/api/user', user);
 
 app.use((req, res) => {
+    const regex = /\.\w+$/ /// Match all extensions
+    if (req.url.match(regex)) return res.sendStatus(404) // if file, return 404
     res.sendFile(
         path.join(__dirname, 'public', 'index.html')
     );
