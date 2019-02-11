@@ -1,12 +1,15 @@
-const winston = require('winston');
+const { createLogger, transports, format, } = require('winston');
 const path = require('path');
 const config = require('config')
 
 
-module.exports = winston.createLogger({
+module.exports = createLogger({
     // level: config.get('LogLevel'),
     level: 'info',
-    format: winston.format.prettyPrint(),
-    transports: new winston.transports.File({ filename: path.join(__dirname, '..', '..', 'logfile.log') }),
-    exceptionHandlers: new winston.transports.File({ filename: path.join(__dirname, '..', '..', 'exceptions.log')})
+    format: format.combine(format.timestamp(), format.prettyPrint()),
+    transports: new transports.File({ filename: path.join(__dirname, '..', '..', 'logfile.log') }),
+    exceptionHandlers: [
+        new transports.File({ filename: path.join(__dirname, '..', '..', 'exceptions.log') }),
+        new transports.Console()
+    ]
 });
