@@ -16,14 +16,14 @@ const UserSchema = new Schema({
         required: true,
         unique: true
     },
-    hash: {
+    password: {
         type: String,
         required: true
     }
 });
 
 UserSchema.methods.verifyPassword =  function(password) {
-    return bcrypt.compareSync(password, this.hash);
+    return bcrypt.compareSync(password, this.password);
 }
 
 const Users = mongoose.model('User', UserSchema);

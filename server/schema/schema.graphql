@@ -1,0 +1,87 @@
+scalar Date
+
+type Query {
+    currentUser: User!
+    user(id: ID!): User!
+    users: [User!]!
+    requisition(id: ID!): Requisition!
+    requisitions: [Requisition!]!
+    stock(id: ID!): Stock!
+    stocks: [Stock!]!
+}
+
+type Mutation {
+    createUser(data: CreateUserInput!): User!
+    editUser(data: EditUserInput!, where: ID!): User!
+    deleteUser(id: ID!): User!
+    createRequisition(data: CreateRequisitionInput!): Requisition!
+    editRequisition(data: EditRequisitionInput!, where: ID!): Requisition!
+    deleteRequisition(id: ID!): User!
+    createStock(data: CreateStockInput!): Stock!
+    editStock(data: EditStockInput! where: ID!): Stock!
+    deleteStock(id: ID!): Stock!
+}
+
+input CreateUserInput {
+    name: String!
+    role: String!
+    username: String!
+    password: String!
+}
+
+input EditUserInput {
+    name: String
+    role: String
+    username: String
+    password: String
+}
+
+input CreateRequisitionInput {
+    name: String!
+    role: String
+    item: ID!
+    returnDate: Date!
+}
+
+input EditRequisitionInput {
+    name: String
+    role: String
+    item: ID
+    returnDate: Date
+}
+
+input CreateStockInput {
+    name: String!
+    quantity: Int!
+    numberInStock: Int
+}
+
+input EditStockInput {
+    quantity: Int
+    numberInStock: Int
+}
+
+type Requisition {
+    _id: ID!
+    name: String!
+    role: String
+    item: Stock!
+    date: Date!
+    returnDate: Date!
+    actualReturnDate: Date
+}
+
+type Stock {
+    _id: ID!
+    name: String!
+    quantity: Int!
+    numberInStock: Int!
+    requisitionHistory: [Requisition!]!
+}
+
+type User {
+    _id: ID!
+    name: String!
+    role: String!
+    username: String!
+}
