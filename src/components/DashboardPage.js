@@ -1,12 +1,11 @@
-import { Badge, Button, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, CircularProgress } from '@material-ui/core';
+import { Badge, Button, CircularProgress, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
 import { withStyles } from '@material-ui/core/styles';
+import gql from "graphql-tag";
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { Query } from 'react-apollo';
 import Drawer from './Drawer';
-import { startSetStock } from '../actions/stocks';
-import { startSetRequisition } from '../actions/requistions';
 
 
 const styles = theme => ({
@@ -48,22 +47,37 @@ const styles = theme => ({
 
 class DashboardPage extends Component {
     state = {
-        stocks: this.props.stocks,
-        stocksLoaded: false,
-        requisitionsLoaded: false,
-    }
-
-    componentDidMount = () => {
-        if (this.props.stocks.length === 0) this.props.loadStocks().then(() => this.setState({ stocksLoaded: true }));
-        else this.setState({ stocksLoaded: true })
-        if (this.props.requisitions.length === 0) this.props.loadRequisitions().then(() => this.setState({ requisitionsLoaded: true }));
-        else this.setState({ requisitionsLoaded: true })
+        requisitions: [],
+        stocks: []
     }
 
     handleSeeAll = name => () => this.props.history.push(name)
 
     render() {
         const { classes } = this.props;
+        const loadRequisitionsQuery = gql`
+        {
+            requisitions {
+                _id
+                name
+                role
+                returnDate
+                item {
+                    name
+                }
+            }
+        }
+        `
+        const loadStocksQuery = gql`
+        {
+            stocks {
+                _id
+                name
+                quantity
+                numberInStock
+            }
+        }
+        `
 
         return (
             <div className={classes.root}>
@@ -76,7 +90,7 @@ class DashboardPage extends Component {
                             <Paper>
                                 <Grid container justify='space-between' alignItems='center'>
                                     <Grid item>
-                                        <Badge badgeContent={this.props.requisitions.length} color='primary' className={classes.badge}>
+                                        <Badge badgeContent={this.state.requisitions.length} color='primary' className={classes.badge}>
                                             <Typography variant='h4' gutterBottom className={`${classes.paperHeading} ${classes.requisitionHeading}`}>Requisitions</Typography>
                                         </Badge>
                                     </Grid>
@@ -86,27 +100,41 @@ class DashboardPage extends Component {
                                 </Grid>
                                 <Divider variant='middle' />
                                 <div className={classes.table}>
-                                    {!this.state.stocksLoaded && <CircularProgress className={classes.progress} />}
-                                    {this.state.stocksLoaded && <Table padding='dense'>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Name</TableCell>
-                                                <TableCell>Role</TableCell>
-                                                <TableCell>Item</TableCell>
-                                                <TableCell>Return Date</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {this.props.requisitions.map((row, idx) => (
-                                                <TableRow key={row.id}>
-                                                    <TableCell>{row.name}</TableCell>
-                                                    <TableCell>{row.role}</TableCell>
-                                                    <TableCell>{row.item}</TableCell>
-                                                    <TableCell>{row.returnDate.format('DD-MM-YYYY')}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>}
+                                    <Query query={loadRequisitionsQuery}>
+                                        {({ loading, error, data }) => {
+                                            if (loading) return <CircularProgress className={classes.progress} />
+                                            if (error) return <p>Error occured</p>
+
+                                            return (
+                                                <Table padding='dense' >
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell>Name</TableCell>
+                                                            <TableCell>Role</TableCell>
+                                                            <TableCell>Item</TableCell>
+                                                            <TableCell>Return Date</TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+
+                                                    <TableBody>
+                                                        {data.requisitions.map((row, idx) => {
+                                                            if (idx < 5) {
+                                                                return (
+                                                                    <TableRow key={row._id}>
+                                                                        <TableCell>{row.name}</TableCell>
+                                                                        <TableCell>{row.role}</TableCell>
+                                                                        <TableCell>{row.item.name}</TableCell>
+                                                                        <TableCell>{row.returnDate}</TableCell>
+                                                                    </TableRow>
+                                                                )
+                                                            }
+                                                        })}
+
+                                                    </TableBody>
+                                                </Table>
+                                            )
+                                        }}
+                                    </Query>
                                 </div>
                             </Paper>
                         </Grid>
@@ -122,28 +150,36 @@ class DashboardPage extends Component {
                                 </Grid>
                                 <Divider variant='middle' />
                                 <div className={classes.table}>
-                                    {!this.state.requisitionsLoaded && <CircularProgress className={classes.progress} />}
-                                    {this.state.requisitionsLoaded && <Table padding='dense'>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Item</TableCell>
-                                                <TableCell>Quantity</TableCell>
-                                                <TableCell>No in Stock</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {this.props.stocks.map((row, idx) => {
-                                                if (idx < 3)
-                                                    return (
-                                                        <TableRow key={row.name}>
-                                                            <TableCell>{row.name}</TableCell>
-                                                            <TableCell>{row.quantity}</TableCell>
-                                                            <TableCell>{row.numberInStock}</TableCell>
+                                    <Query query={loadStocksQuery}>
+                                        {({ loading, error, data }) => {
+                                            if (loading) return <CircularProgress className={classes.progress} />
+                                            if (error) return <p>Error occured</p>
+
+                                            return (
+                                                <Table padding='dense'>
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell>Item</TableCell>
+                                                            <TableCell>Quantity</TableCell>
+                                                            <TableCell>No in Stock</TableCell>
                                                         </TableRow>
-                                                    );
-                                            })}
-                                        </TableBody>
-                                    </Table>}
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {data.stocks.map((row, idx) => {
+                                                            if (idx < 3)
+                                                                return (
+                                                                    <TableRow key={row._id}>
+                                                                        <TableCell>{row.name}</TableCell>
+                                                                        <TableCell>{row.quantity}</TableCell>
+                                                                        <TableCell>{row.numberInStock}</TableCell>
+                                                                    </TableRow>
+                                                                );
+                                                        })}
+                                                    </TableBody>
+                                                </Table>
+                                            )
+                                        }}
+                                    </Query>
                                 </div>
                             </Paper>
                         </Grid>
@@ -159,11 +195,5 @@ class DashboardPage extends Component {
     }
 }
 
-const mapStateToProps = ({ requisitions, stocks }) => ({ requisitions, stocks });
 
-const mapDispatchToProps = dispatch => ({
-    loadStocks: () => dispatch(startSetStock()),
-    loadRequisitions: () => dispatch(startSetRequisition())
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(DashboardPage))
+export default withStyles(styles)(DashboardPage);

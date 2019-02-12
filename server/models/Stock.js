@@ -18,18 +18,8 @@ const StockSchema = new Schema({
         min: 0
     },
     requisitionHistory: [{
-        name: {
-            type: String,
-        },
-        role: {
-            type: String
-        },
-        returnDate: {
-            type: Date
-        },
-        actualReturnDate: {
-            type: Date
-        }
+        type: Schema.Types.ObjectId,
+        ref: 'requisition'
     }]
 })
 

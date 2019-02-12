@@ -7,6 +7,8 @@ import { startAddRequisition, startEditRequisition } from '../actions/requistion
 import capitalizeWords from '../helpers/capitalizeWords';
 import getNames from '../helpers/getNames';
 import AutoSuggest from './Autosuggest';
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
 
 
 function getModalStyle() {
@@ -80,6 +82,13 @@ class CreateRequisitionModal extends React.Component {
 
     render = () => {
         const { classes } = this.props
+        const getNamesQuery = gql`
+        {
+            stocks {
+                name
+            }
+        }
+        `
 
         return (
             <Modal
@@ -113,11 +122,26 @@ class CreateRequisitionModal extends React.Component {
                             margin="normal"
                             fullWidth
                         />
-                        <AutoSuggest
-                            options={this.state.stocks}
-                            onChange={this.handleChange('item')}
-                            value={this.state.item}
-                            label="Item *" />
+                        <Query query={getNamesQuery}>
+                            {({ loading, error, data }) => {
+                                if (loading || error) return (
+                                    <AutoSuggest
+                                        options={[]}
+                                        onChange={this.handleChange('item')}
+                                        value={this.state.item}
+                                        label="Item *" />
+                                )
+
+                                let stocks = data.stocks.map(stock => ({ label: stock.name }))
+                                return (
+                                    <AutoSuggest
+                                        options={stocks}
+                                        onChange={this.handleChange('item')}
+                                        value={this.state.item}
+                                        label="Item *" />
+                                )
+                            }}
+                        </Query>
                         <TextField
                             label="Return Date"
                             type="date"

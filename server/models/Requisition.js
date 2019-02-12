@@ -22,6 +22,9 @@ const RequisitionSchema = new Schema({
         type: Date,
         required: true,
     },
+    actualReturnDate: {
+        type: Date
+    },
 })
 
 const Requisitions = mongoose.model('Requisition', RequisitionSchema);

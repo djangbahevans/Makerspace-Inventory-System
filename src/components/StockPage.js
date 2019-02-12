@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import Drawer from './Drawer';
 import Stock from './Stock';
 import { startSetStock } from '../actions/stocks';
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
 
 
 const styles = theme => ({
@@ -47,43 +49,18 @@ class StockPage extends Component {
         page: 0
     }
 
-    componentDidMount = () => {
-        // if (this.props.stocks.length === 0) this.props.loadStocks(this.state.page).then(() => { this.state.page += 1; this.setState({ stocksLoaded: true }) });
-        if (this.props.stocks.length === 0) this.props.loadStocks().then(() => {  this.setState({ stocksLoaded: true }) });
-        else this.setState({ stocksLoaded: true });
-
-        // window.onscroll = () => {
-        //     const {
-        //         loadStocks,
-        //         state: {
-        //             hasMore,
-        //         },
-        //     } = this;
-
-        //     // Bails early if:
-        //     // * there's an error
-        //     // * it's already loading
-        //     // * there's nothing left to load
-        //     if (!hasMore) return;
-
-        //     // Checks that the page has scrolled to the bottom
-        //     if (
-        //         window.innerHeight + document.documentElement.scrollTop
-        //         === document.documentElement.offsetHeight
-        //     ) {
-        //         loadStocks();
-        //     }
-        // };
-    }
-
-    // loadStocks = () => {
-    //     this.props.loadStocks(this.state.page);
-    //     this.state.page += 1;
-    //     console.log(`Current page: ${this.state.page}`)
-    // }
-
     render = () => {
         const { classes } = this.props
+        const loadStocksQuery = gql`
+        {
+            stocks {
+                _id
+                name
+                quantity
+                numberInStock
+            }
+        }
+        `
 
         return (
             <div className={classes.root}>
@@ -91,19 +68,27 @@ class StockPage extends Component {
                 <Drawer history={this.props.history} />
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    {!this.state.stocksLoaded && <CircularProgress className={classes.progress} />}
-                    {this.state.stocksLoaded && <Grid container spacing={40}>
-                        {this.props.stocks.map(stock =>
-                            <Stock
-                                key={stock.id}
-                                image={`./img/${stock.name.toLowerCase()}.jpg`}
-                                id={stock.id}
-                                title={stock.name}
-                                header={stock.name}
-                                quantity={stock.quantity}
-                                numberInStock={stock.numberInStock}
-                                history={this.props.history} />)}
-                    </Grid>}
+                    <Query query={loadStocksQuery}>
+                        {({ loading, error, data }) => {
+                            if (loading) return <CircularProgress className={classes.progress} />
+                            if (error) return <p>Error occured</p>
+
+                            return (
+                                <Grid container spacing={40}>
+                                    {data.stocks.map(stock =>
+                                        <Stock
+                                            key={stock._id}
+                                            image={`./img/${stock.name.toLowerCase()}.jpg`}
+                                            id={stock._id}
+                                            title={stock.name}
+                                            header={stock.name}
+                                            quantity={stock.quantity}
+                                            numberInStock={stock.numberInStock}
+                                            history={this.props.history} />)}
+                                </Grid>
+                            )
+                        }}
+                    </Query>
                 </main>
             </div>
         )
@@ -111,7 +96,6 @@ class StockPage extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-    // loadStocks: page => dispatch(startGetStocks(page)),
     loadStocks: () => dispatch(startSetStock()),
 });
 

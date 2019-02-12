@@ -56,9 +56,9 @@ router.delete('/:id', async (req, res) => {
     ++stock.numberInStock; // Increase Stock numberInStock Count
 
     // Add requisition to Stock requisitionHistory
-    const { _id, item, ...requisitionHistory } = requisition._doc;
-    requisitionHistory.actualReturnDate = new Date();
-    stock.requisitionHistory.push(requisitionHistory);
+    // const { _id, item, ...requisitionHistory } = requisition._doc;
+    // requisitionHistory.actualReturnDate = new Date();
+    // stock.requisitionHistory.push(requisitionHistory);
 
     await stock.save();
     if (requisition) return res.send(stock);

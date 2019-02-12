@@ -5,6 +5,8 @@ import { startAddRequisition, startDeleteRequisition, startEditRequisition, star
 import CreateRequisitionModal from "./CreateRequisitionModal";
 import Drawer from "./Drawer";
 import RequisitionTableRow from "./RequisitionTableRow";
+import { Query } from "react-apollo";
+import gql from "graphql-tag";
 
 
 const styles = theme => ({
@@ -58,8 +60,8 @@ class RequistionsPage extends React.Component {
     requisitions = this.props.requisitions
 
     componentDidMount = () => {
-        if (this.props.requisitions.length === 0) this.props.loadRequisitions().then(() => this.setState({ requisitionsLoaded: true }));
-        else this.setState({ requisitionsLoaded: true })
+        // if (this.props.requisitions.length === 0) this.props.loadRequisitions().then(() => this.setState({ requisitionsLoaded: true }));
+        // else this.setState({ requisitionsLoaded: true })
     }
 
     handleOpen = () => this.setState({ createModalOpen: true });
@@ -90,6 +92,19 @@ class RequistionsPage extends React.Component {
 
     render() {
         const { classes } = this.props;
+        const loadRequisitionsQuery = gql`
+        {
+            requisitions {
+                _id
+                name
+                role
+                returnDate
+                item {
+                    name
+                }
+            }
+        }
+        `
 
         return (
             <div className={classes.root}>
@@ -105,11 +120,11 @@ class RequistionsPage extends React.Component {
                         role={this.state.role}
                         returnDate={this.state.returnDate}
                         item={this.state.item} />}
-                    {!this.state.requisitionsLoaded && <CircularProgress className={classes.progress} />}
-                    {this.state.requisitionsLoaded && <Paper>
+                    
+                    {<Paper>
                         <Grid container justify='space-between' alignItems='center'>
                             <Grid item>
-                                <Badge badgeContent={this.props.requisitions.length} color='primary' className={classes.badge}>
+                                <Badge badgeContent={0} color='primary' className={classes.badge}>
                                     <Typography variant='h4' gutterBottom className={`${classes.paperHeading} ${classes.requisitionHeading}`}>Requisitions</Typography>
                                 </Badge>
                             </Grid>
@@ -123,30 +138,39 @@ class RequistionsPage extends React.Component {
                         </Grid>
                         <Divider variant='middle' />
                         <div className={classes.table}>
-                            <Table padding='dense'>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Name</TableCell>
-                                        <TableCell>Role</TableCell>
-                                        <TableCell>Item</TableCell>
-                                        <TableCell>Return Date</TableCell>
-                                        <TableCell></TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {this.props.requisitions.map(row => (
-                                        <RequisitionTableRow
-                                            key={row.id}
-                                            id={row.id}
-                                            name={row.name}
-                                            role={row.role}
-                                            item={row.item}
-                                            returnDate={row.returnDate}
-                                            handleEdit={this.handleEdit}
-                                            handleDelete={this.handleDelete} />
-                                    ))}
-                                </TableBody>
-                            </Table>
+                            <Query query={loadRequisitionsQuery}>
+                                {({ load, error, data }) => {
+                                    if (load) return <p>Loading...</p>
+                                    if (error) return <p>Error occured</p>
+
+                                    return (
+                                        <Table padding='dense'>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Name</TableCell>
+                                                    <TableCell>Role</TableCell>
+                                                    <TableCell>Item</TableCell>
+                                                    <TableCell>Return Date</TableCell>
+                                                    <TableCell></TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {data.requisitions.map(row => (
+                                                    <RequisitionTableRow
+                                                        key={row._id}
+                                                        id={row._id}
+                                                        name={row.name}
+                                                        role={row.role}
+                                                        item={row.item.name}
+                                                        returnDate={row.returnDate}
+                                                        handleEdit={this.handleEdit}
+                                                        handleDelete={this.handleDelete} />
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    );
+                                }}
+                            </Query>
                         </div>
                     </Paper>}
                 </main>
@@ -162,6 +186,4 @@ const mapDispatchToProps = dispatch => ({
     loadRequisitions: () => dispatch(startSetRequisition())
 })
 
-const mapStateToProps = ({ requisitions }) => ({ requisitions })
-
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(RequistionsPage));
+export default connect(undefined, mapDispatchToProps)(withStyles(styles)(RequistionsPage));

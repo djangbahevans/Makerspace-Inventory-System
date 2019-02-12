@@ -63,11 +63,11 @@ const server = new ApolloServer({
         Mutation,
         Query,
         Requisition,
-        Stock
+        Stock,
     },
-    playground: false,
+    playground: true,
     context: ({ req, res }) => {
-        console.log(req.isAuthenticated())
+        return { req, res };
     },
 });
 

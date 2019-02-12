@@ -19,7 +19,6 @@ const AppRouter = () => (
     <Router history={history}>
         <div>
             <CssBaseline />
-            {/* Place Header here */}
             <Switch>
                 <PublicRoute path='/' component={Login} exact />
                 <PrivateRoute path='/dashboard' component={Dashboard} exact />
