@@ -1,12 +1,11 @@
-import { Badge, Button, CssBaseline, Divider, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles, CircularProgress } from "@material-ui/core";
+import { Badge, Button, CssBaseline, Divider, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from "@material-ui/core";
+import gql from "graphql-tag";
 import React from 'react';
-import { connect } from 'react-redux';
-import { startAddRequisition, startDeleteRequisition, startEditRequisition, startSetRequisition } from "../actions/requistions";
+import { Query } from "react-apollo";
 import CreateRequisitionModal from "./CreateRequisitionModal";
 import Drawer from "./Drawer";
 import RequisitionTableRow from "./RequisitionTableRow";
-import { Query } from "react-apollo";
-import gql from "graphql-tag";
+import moment from "moment";
 
 
 const styles = theme => ({
@@ -57,13 +56,6 @@ class RequistionsPage extends React.Component {
         requisitionsLoaded: false
     }
 
-    requisitions = this.props.requisitions
-
-    componentDidMount = () => {
-        // if (this.props.requisitions.length === 0) this.props.loadRequisitions().then(() => this.setState({ requisitionsLoaded: true }));
-        // else this.setState({ requisitionsLoaded: true })
-    }
-
     handleOpen = () => this.setState({ createModalOpen: true });
 
     handleEdit = ({ id, name, role, item, returnDate }) => () => {
@@ -74,21 +66,13 @@ class RequistionsPage extends React.Component {
             role,
             item,
             returnDate
-        })
+        });
     };
 
     handleClose = () => this.setState({
         createModalOpen: false,
         editModalOpen: false
     })
-
-    // TODO: remove this function
-    handleAccept = ({ id, name, role, item, returnDate }, edit) => {
-        if (edit) return this.props.startEditRequisition(id, { role, item, returnDate })
-        this.props.startAddRequisition({ name, role, item, returnDate }, error => this.setState({ error }));
-    }
-
-    handleDelete = id => this.props.startDeleteRequisition(id)
 
     render() {
         const { classes } = this.props;
@@ -120,7 +104,7 @@ class RequistionsPage extends React.Component {
                         role={this.state.role}
                         returnDate={this.state.returnDate}
                         item={this.state.item} />}
-                    
+
                     {<Paper>
                         <Grid container justify='space-between' alignItems='center'>
                             <Grid item>
@@ -155,6 +139,7 @@ class RequistionsPage extends React.Component {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
+                                                
                                                 {data.requisitions.map(row => (
                                                     <RequisitionTableRow
                                                         key={row._id}
@@ -162,9 +147,10 @@ class RequistionsPage extends React.Component {
                                                         name={row.name}
                                                         role={row.role}
                                                         item={row.item.name}
-                                                        returnDate={row.returnDate}
-                                                        handleEdit={this.handleEdit}
-                                                        handleDelete={this.handleDelete} />
+                                                        returnDate = {
+                                                            moment(row.returnDate, "YYYY-MM-DD").format("Do MMMM, YYYY")
+                                                        }
+                                                        handleEdit={this.handleEdit} />
                                                 ))}
                                             </TableBody>
                                         </Table>
@@ -179,11 +165,5 @@ class RequistionsPage extends React.Component {
     }
 }
 
-const mapDispatchToProps = dispatch => ({
-    startAddRequisition: (requisition, cb) => dispatch(startAddRequisition(requisition, cb)),
-    startEditRequisition: (id, requisition) => dispatch(startEditRequisition(id, requisition)),
-    startDeleteRequisition: id => dispatch(startDeleteRequisition(id)),
-    loadRequisitions: () => dispatch(startSetRequisition())
-})
 
-export default connect(undefined, mapDispatchToProps)(withStyles(styles)(RequistionsPage));
+export default withStyles(styles)(RequistionsPage);

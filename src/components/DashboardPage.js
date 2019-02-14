@@ -6,6 +6,7 @@ import gql from "graphql-tag";
 import React, { Component } from 'react';
 import { Query } from 'react-apollo';
 import Drawer from './Drawer';
+import moment from 'moment';
 
 
 const styles = theme => ({
@@ -103,7 +104,7 @@ class DashboardPage extends Component {
                                     <Query query={loadRequisitionsQuery}>
                                         {({ loading, error, data }) => {
                                             if (loading) return <CircularProgress className={classes.progress} />
-                                            if (error) return <p>Error occured</p>
+                                            if (error) return <p>{error.message}</p>
 
                                             return (
                                                 <Table padding='dense' >
@@ -124,7 +125,7 @@ class DashboardPage extends Component {
                                                                         <TableCell>{row.name}</TableCell>
                                                                         <TableCell>{row.role}</TableCell>
                                                                         <TableCell>{row.item.name}</TableCell>
-                                                                        <TableCell>{row.returnDate}</TableCell>
+                                                                        <TableCell>{moment(row.returnDate, "YYYY-MM-DD").format("Do MMMM, YYYY")}</TableCell>
                                                                     </TableRow>
                                                                 )
                                                             }
@@ -153,7 +154,7 @@ class DashboardPage extends Component {
                                     <Query query={loadStocksQuery}>
                                         {({ loading, error, data }) => {
                                             if (loading) return <CircularProgress className={classes.progress} />
-                                            if (error) return <p>Error occured</p>
+                                            if (error) return <p>{error.message}</p>
 
                                             return (
                                                 <Table padding='dense'>

@@ -3,9 +3,23 @@ const passport = require('passport');
 const User = require('../models/User');
 const Stock = require('../models/Stock');
 const Requisition = require('../models/Requisition');
+const moment = require('moment')
 
 
 const Mutation = {
+    login: async (parent, { password, username }, { req, res }, info) => {
+        return new Promise((resolve, reject) => {
+            passport.authenticate('local', (err, user) => {
+                if (err) reject(err);
+                if (!user) reject('Invalid credentials.');
+
+                req.login(user, () => resolve(user));
+            })({ body: { username, password } });
+        });
+    },
+    logout: async (parent, args, {
+        req
+    }, info) => req.logout(),
     createUser: async (parent, { data }, { req, res }, info) => {
         let { name, role, username, password } = data;
 
@@ -54,9 +68,13 @@ const Mutation = {
         return user;
     },
     createRequisition: async (parent, args, ctx, info) => {
-        const { name, role, item, returnDate } = args.data;
+        let { name, role, item, returnDate } = args.data;
 
-        const stock = await Stock.findById(item); // Ensure item exists
+        // return date string in format YYYY-MM-DD;
+        returnDate = moment(returnDate, "YYYY-MM-DD").toDate()
+
+        // const stock = await Stock.findById(item); // Ensure item exists
+        const stock = await Stock.findOne({name: item})
         if (!stock) throw new Error("Item does not exist");
 
         let { numberInStock } = stock;
@@ -75,6 +93,8 @@ const Mutation = {
         stock.requisitionHistory.push(requisition._id);
         await stock.save();
 
+        requisition.returnDate = moment(returnDate).format("YYYY-MM-DD")
+
         return requisition;
     },
     editRequisition: async (parent, { id, data }, ctx, info) => {
@@ -83,18 +103,6 @@ const Mutation = {
 
         if (!requisition) throw new Error("Requisition not found");
 
-        // Increment former item
-        let oldStock = await Stock.findById(requisition.item._id);
-        ++oldStock.numberInStock;
-        oldStock.save();
-
-        // Decrement current item
-        let newStock = await Stock.findOne({ name: item });
-        --newStock.numberInStock;
-        await newStock.save();
-
-        // Editing requisition
-        requisition.item = newStock;
         requisition.role = role;
         requisition.returnDate = returnDate;
         if (actualReturnDate) requisition.actualReturnDate = actualReturnDate;
@@ -122,7 +130,7 @@ const Mutation = {
         return requisition;
     },
     createStock: async (parent, { data }, ctx, info) => {
-        const { name, quantity, numberInStock } = data;
+        let { name, quantity, numberInStock } = data;
         if (!numberInStock) numberInStock = quantity;
 
         let stock = new Stock({
@@ -161,16 +169,16 @@ const Mutation = {
         return stock;
     },
     deleteStock: async (parent, { id }, ctx, info) => {
-        const stock = await Stock.findById(id)
-        if (!stock) throw new Error("Stock not found")
+        const stock = await Stock.findById(id);
+        if (!stock) throw new Error("Stock not found");
 
         stock.requisitionHistory.map(requisition => {
-            Requisition.findByIdAndDelete(requisition)
+            Requisition.findByIdAndDelete(requisition);
         });
 
         await stock.remove();
         return stock;
     },
-}
+};
 
 module.exports = Mutation;

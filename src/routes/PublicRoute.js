@@ -1,24 +1,44 @@
+import gql from 'graphql-tag';
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
-import { connect } from 'react-redux';
+import {
+    Query
+} from 'react-apollo';
+import {
+    Redirect,
+    Route
+} from 'react-router-dom';
 
+
+const getUserQuery = gql`
+{
+    currentUser {
+        _id
+    }
+}
+`
 
 export const PublicRoute = ({
     isAuthenticated,
     component: Component,
     ...rest
-}) => (
-        <Route {...rest} component={(props) => (
-            isAuthenticated ? (
-                <Redirect to='/dashboard' />
-            ) : (
-                    <Component {...props} />
-                )
-        )} />
+}) => (<
+    Route {
+    ...rest
+    }
+    component={
+        (props) => (<Query
+            query={getUserQuery}>
+            {
+                ({ data }) => data.currentUser ? (<
+                    Redirect to='/dashboard' />
+                ) : (
+                        <Component {...props} />
+                    )
+            }
+        </Query>
+        )
+    }
+/>
     );
 
-const mapStateToProps = (state) => ({
-    isAuthenticated: state.user._id
-});
-
-export default connect(mapStateToProps)(PublicRoute);
+export default PublicRoute;

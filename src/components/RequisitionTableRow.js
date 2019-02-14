@@ -2,14 +2,26 @@ import { IconButton, TableCell, TableRow } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import React, { Component } from 'react';
+import { Mutation } from 'react-apollo';
+import gql from 'graphql-tag';
 
 
 class RequisitionTableRow extends Component {
     state = {
         editModalOpen: true
     }
-    
+
     render() {
+        const { id } = this.props;
+
+        const deleteRequisitionMutation = gql`
+            mutation deleteRequisition($id: ID!) {
+                deleteRequisition(id: $id) {
+                    _id
+                }
+            }
+        `
+
         return (
             <TableRow>
                 <TableCell>{this.props.name}</TableCell>
@@ -20,9 +32,13 @@ class RequisitionTableRow extends Component {
                     <IconButton aria-label="Edit" onClick={this.props.handleEdit(this.props)} onClose={this.props.onClose}>
                         <EditIcon />
                     </IconButton>
-                    <IconButton aria-label="Delete" onClick={() => this.props.handleDelete(this.props.id)}>
-                        <DeleteIcon />
-                    </IconButton>
+                    <Mutation mutation={deleteRequisitionMutation}>
+                        {(deleteRequisition, { data }) => (
+                            <IconButton aria-label="Delete" onClick={() => deleteRequisition({ variables: { id } })}>
+                                <DeleteIcon />
+                            </IconButton>
+                        )}
+                    </Mutation>
                 </TableCell>
             </TableRow>
         );

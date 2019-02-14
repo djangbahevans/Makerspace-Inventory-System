@@ -1,12 +1,10 @@
-import { CssBaseline, Grid, CircularProgress } from '@material-ui/core';
+import { CircularProgress, CssBaseline, Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import gql from 'graphql-tag';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { Query } from 'react-apollo';
 import Drawer from './Drawer';
 import Stock from './Stock';
-import { startSetStock } from '../actions/stocks';
-import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 
 
 const styles = theme => ({
@@ -95,10 +93,4 @@ class StockPage extends Component {
     }
 }
 
-const mapDispatchToProps = dispatch => ({
-    loadStocks: () => dispatch(startSetStock()),
-});
-
-const mapStateToProps = ({ stocks }) => ({ stocks })
-
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(StockPage));
+export default withStyles(styles)(StockPage);

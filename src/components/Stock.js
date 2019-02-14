@@ -22,7 +22,7 @@ class Stock extends Component {
         const { classes } = this.props;
 
         return (
-            <Grid item xs={3}>
+            <Grid item xs={6} md={3}>
                 {this.state.editModalOpen && <CreateStockModal
                     edit
                     id={this.props.id}
@@ -50,8 +50,9 @@ class Stock extends Component {
                         </CardContent>
                     </CardActionArea>
                     <CardActions>
-                        <Button size="small" color="primary" fullWidth onClick={() => {this.setState({ editModalOpen: true })}}>
-                            Edit</Button>
+                        <Button size="small" color="primary" fullWidth onClick={() => { this.setState({ editModalOpen: true }) }}>
+                            Edit
+                        </Button>
                     </CardActions>
                 </Card>
             </Grid >

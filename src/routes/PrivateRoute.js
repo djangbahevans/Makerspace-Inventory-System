@@ -1,26 +1,31 @@
+import gql from 'graphql-tag';
 import React from 'react';
-import { connect } from 'react-redux';
+import { Query } from 'react-apollo';
 import { Redirect, Route } from 'react-router-dom';
 
 
+const getUserQuery = gql`
+{
+    currentUser {
+        _id
+    }
+}
+`
+
 export const PrivateRoute = ({
-    isAuthenticated,
     component: Component,
     ...rest
 }) => (
         <Route {...rest} component={props => (
-            isAuthenticated ? (
-                <div>
-                    <Component {...props} />
-                </div>
-            ) : (
-                    <Redirect to='/' />
-                )
+            <Query query={getUserQuery}>
+                {({ data }) =>
+                data.currentUser ? (
+                        <Component {...props} />
+                    ) : (
+                            <Redirect to='/' />
+                        )}
+            </Query>
         )} />
     );
 
-const mapStateToProps = (state) => ({
-    isAuthenticated: state.user._id
-});
-
-export default connect(mapStateToProps)(PrivateRoute);
+export default PrivateRoute;

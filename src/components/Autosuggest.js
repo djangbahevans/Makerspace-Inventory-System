@@ -129,7 +129,7 @@ const components = {
 
 class IntegrationReactSelect extends React.Component {
     state = {
-        value: {label: this.props.value}
+        value: { label: this.props.value }
     };
 
     handleChange = (value) => {
@@ -161,6 +161,7 @@ class IntegrationReactSelect extends React.Component {
                             shrink: true,
                         },
                     }}
+                    isDisabled={this.props.readOnly}
                     classes={classes}
                     styles={selectStyles}
                     options={this.props.options}

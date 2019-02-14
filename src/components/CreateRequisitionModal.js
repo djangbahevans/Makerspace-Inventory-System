@@ -1,14 +1,11 @@
 import { Button, Modal, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import gql from 'graphql-tag';
 import moment from 'moment';
 import React from 'react';
-import { connect } from 'react-redux';
-import { startAddRequisition, startEditRequisition } from '../actions/requistions';
+import { Mutation, Query } from 'react-apollo';
 import capitalizeWords from '../helpers/capitalizeWords';
-import getNames from '../helpers/getNames';
 import AutoSuggest from './Autosuggest';
-import { Query } from 'react-apollo';
-import gql from 'graphql-tag';
 
 
 function getModalStyle() {
@@ -20,7 +17,7 @@ function getModalStyle() {
         left: `${left}%`,
         transform: `translate(-${top}%, -${left}%)`,
     };
-}
+};
 
 const styles = theme => ({
     paper: {
@@ -42,14 +39,11 @@ class CreateRequisitionModal extends React.Component {
         name: this.props.name ? this.props.name : '',
         role: this.props.role ? this.props.role : '',
         item: this.props.item ? this.props.item : '',
-        returnDate: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY') : moment(),
-        returnDateText: this.props.returnDate ? moment(this.props.returnDate, 'DD-MM-YYYY').format('YYYY-MM-DD') : moment().format('YYYY-MM-DD'),
+        returnDate: this.props.returnDate ? moment(this.props.returnDate, 'YYYY-MM-DD') : moment(),
         dateError: false,
         error: '',
         stocks: []
     }
-
-    componentDidMount = () => getNames(stocks => this.setState({ stocks: stocks.map((stock => ({ label: stock }))) }))
 
     handleChange = name => event => {
         if (name === 'returnDate') {
@@ -67,21 +61,17 @@ class CreateRequisitionModal extends React.Component {
         });
     }
 
-    handleAccept = () => {
-        const { id, name, role, item, returnDate } = this.state;
-        let error;
-        if (name && item) {
-            if (this.props.edit) return this.props.startEditRequisition(id, { role, item, returnDate })
-                .then(() => this.props.onClose())
-            else this.props.startAddRequisition({ name, role, item, returnDate }, err => {
-                error = err
-                this.setState({ error })
-            }).then(() => { if (!error) this.props.onClose(); })
-        }
+    handleAccept = queryFunction => () => {
+        const { edit } = this.props;
+        let { name, role, item, returnDate, id } = this.state;
+        returnDate = returnDate.format("YYYY-MM-DD");
+
+        if (edit) queryFunction({ variables: { role, returnDate, id } });
+        if (!edit) queryFunction({ variables: { name, item, role, returnDate } });
     }
 
     render = () => {
-        const { classes } = this.props
+        const { classes, edit } = this.props
         const getNamesQuery = gql`
         {
             stocks {
@@ -90,86 +80,126 @@ class CreateRequisitionModal extends React.Component {
         }
         `
 
-        return (
-            <Modal
-                open
-                onClose={this.props.onClose}
-            >
-                <div style={getModalStyle()} className={classes.paper}>
-                    <Typography variant="h6" gutterBottom id="modal-title" align='center'>{this.props.edit ? 'Edit Requisition' : 'Add New Requisition'}</Typography>
-                    {this.state.error && <Typography variant="body1" color="error" id="modal-title" align='center'>{this.state.error}</Typography>}
-                    <form>
-                        <TextField
-                            label="Name"
-                            className={classes.textField}
-                            value={this.state.name}
-                            onChange={this.handleChange('name')}
-                            margin="normal"
-                            InputProps={{
-                                readOnly: this.props.edit,
-                            }}
-                            autoFocus={!this.props.edit}
-                            fullWidth
-                            required
-                            error={!this.state.name}
-                        />
-                        <TextField
-                            label="Role"
-                            className={classes.textField}
-                            value={this.state.role}
-                            onChange={this.handleChange('role')}
-                            autoFocus={this.props.edit}
-                            margin="normal"
-                            fullWidth
-                        />
-                        <Query query={getNamesQuery}>
-                            {({ loading, error, data }) => {
-                                if (loading || error) return (
-                                    <AutoSuggest
-                                        options={[]}
-                                        onChange={this.handleChange('item')}
-                                        value={this.state.item}
-                                        label="Item *" />
-                                )
+        const createRequisitionMutation = gql`
+            mutation createRequisitionMutation($name: String!, $item: ID!, $role: String, $returnDate: String!) {
+                createRequisition(data: {
+                    name: $name
+                    item: $item
+                    role: $role
+                    returnDate: $returnDate
+                }) {
+                    name
+                    item {
+                        name
+                    }
+                        role
+                        returnDate
+                }
+            }
+        `
 
-                                let stocks = data.stocks.map(stock => ({ label: stock.name }))
-                                return (
-                                    <AutoSuggest
-                                        options={stocks}
-                                        onChange={this.handleChange('item')}
-                                        value={this.state.item}
-                                        label="Item *" />
-                                )
-                            }}
-                        </Query>
-                        <TextField
-                            label="Return Date"
-                            type="date"
-                            className={classes.textField}
-                            value={this.state.returnDate.format('YYYY-MM-DD')}
-                            onChange={this.handleChange('returnDate')}
-                            margin="normal"
-                            fullWidth
-                            required
-                            error={this.state.dateError}
-                        />
-                        <Button
-                            onClick={this.handleAccept}
-                            color='primary'
-                            variant='contained'
-                            fullWidth
-                        >
-                            Accept</Button>
-                    </form>
-                </div>
-            </Modal>
+        const editRequisitionMutation = gql`
+            mutation editRequisitionMutation($id: ID!, $role: String, $returnDate: String!) {
+                editRequisition (data: {
+                    role: $role
+                    returnDate: $returnDate
+                },
+                id: $id) {
+                    _id
+                    name
+                    role
+                    item {
+                        name
+                    }
+                    returnDate
+                }
+            }
+        `
+
+        return (
+            <Mutation
+                mutation={edit ? editRequisitionMutation : createRequisitionMutation}
+                onCompleted={this.props.onClose} >
+                {(post, { data, loading, error }) => (
+                    <Modal
+                        open
+                        onClose={this.props.onClose}
+                    >
+                        <div style={getModalStyle()} className={classes.paper}>
+                            <Typography variant="h6" gutterBottom id="modal-title" align='center'>{this.props.edit ? 'Edit Requisition' : 'Add New Requisition'}</Typography>
+                            {error && <Typography variant="body1" color="error" id="modal-title" align='center'>{error.message}</Typography>}
+                            {this.state.error && <Typography variant="body1" color="error" id="modal-title" align='center'>{this.state.error}</Typography>}
+                            <form>
+                                <TextField
+                                    label="Name"
+                                    className={classes.textField}
+                                    value={this.state.name}
+                                    onChange={this.handleChange('name')}
+                                    margin="normal"
+                                    InputProps={{
+                                        readOnly: this.props.edit,
+                                    }}
+                                    autoFocus={!this.props.edit}
+                                    fullWidth
+                                    required
+                                    error={!this.state.name}
+                                />
+                                <TextField
+                                    label="Role"
+                                    className={classes.textField}
+                                    value={this.state.role}
+                                    onChange={this.handleChange('role')}
+                                    autoFocus={this.props.edit}
+                                    margin="normal"
+                                    fullWidth
+                                />
+                                <Query query={getNamesQuery}>
+                                    {({ loading, error, data }) => {
+                                        if (loading || error) return (
+                                            <AutoSuggest
+                                                options={[]}
+                                                onChange={this.handleChange('item')}
+                                                value={this.state.item}
+                                                label="Item *" />
+                                        )
+
+                                        let stocks = data.stocks.map(stock => ({ label: stock.name }))
+                                        return (
+                                            <AutoSuggest
+                                                options={stocks}
+                                                onChange={this.handleChange('item')}
+                                                value={this.state.item}
+                                                readOnly={this.props.edit}
+                                                label="Item *" />
+                                        )
+                                    }}
+                                </Query>
+                                <TextField
+                                    label="Return Date"
+                                    type="date"
+                                    className={classes.textField}
+                                    value={this.state.returnDate.format('YYYY-MM-DD')}
+                                    onChange={this.handleChange('returnDate')}
+                                    margin="normal"
+                                    fullWidth
+                                    required
+                                    error={this.state.dateError}
+                                />
+                                <Button
+                                    onClick={this.handleAccept(post)}
+                                    color='primary'
+                                    variant='contained'
+                                    fullWidth
+                                >
+                                    Accept</Button>
+                            </form>
+                        </div>
+                    </Modal>
+                )}
+            </Mutation>
         )
     }
 }
 
-const mapDispatchToProps = dispatch => ({
-    startEditRequisition: (id, requisition) => dispatch(startEditRequisition(id, requisition)),
-    startAddRequisition: (requisition, cb) => dispatch(startAddRequisition(requisition, cb)),
-});
 
-export default connect(undefined, mapDispatchToProps)(withStyles(styles)(CreateRequisitionModal));
+export default withStyles(styles)(CreateRequisitionModal);

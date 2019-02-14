@@ -69,6 +69,7 @@ const server = new ApolloServer({
     context: ({ req, res }) => {
         return { req, res };
     },
+    debug: true
 });
 
 server.applyMiddleware({ app });

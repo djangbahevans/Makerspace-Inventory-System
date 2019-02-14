@@ -1,7 +1,7 @@
-scalar Date
+# scalar Date
 
 type Query {
-    currentUser: User!
+    currentUser: User
     user(id: ID!): User!
     users: [User!]!
     requisition(id: ID!): Requisition!
@@ -11,6 +11,8 @@ type Query {
 }
 
 type Mutation {
+    logout: User
+    login(username: String!, password: String! ): User!
     createUser(data: CreateUserInput!): User!
     editUser(data: EditUserInput!, id: ID!): User!
     deleteUser(id: ID!): User!
@@ -20,6 +22,11 @@ type Mutation {
     createStock(data: CreateStockInput!): Stock!
     editStock(data: EditStockInput! id: ID!): Stock!
     deleteStock(id: ID!): Stock!
+}
+
+input LoginUserInput {
+    username: String!
+    password: String!
 }
 
 input CreateUserInput {
@@ -40,15 +47,13 @@ input CreateRequisitionInput {
     name: String!
     role: String
     item: ID!
-    returnDate: Date!
+    returnDate: String!
 }
 
 input EditRequisitionInput {
-    name: String
     role: String
-    item: ID
-    returnDate: Date
-    actualReturnDate: Date
+    returnDate: String
+    actualReturnDate: String
 }
 
 input CreateStockInput {
@@ -67,9 +72,9 @@ type Requisition {
     name: String!
     role: String
     item: Stock!
-    date: Date!
-    returnDate: Date!
-    actualReturnDate: Date
+    date: String!
+    returnDate: String!
+    actualReturnDate: String
 }
 
 type Stock {

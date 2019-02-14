@@ -1,8 +1,8 @@
 import { Button, Modal, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import gql from 'graphql-tag';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { startAddStock, startEditStock } from '../actions/stocks';
+import { Mutation } from 'react-apollo';
 import capitalizeWords from '../helpers/capitalizeWords';
 
 
@@ -56,80 +56,104 @@ class CreateStockModal extends Component {
         });
     }
 
-    handleAccept = () => {
-        const { id, name, quantity, numberInStock } = this.state;
-        if (this.props.edit) {
-            this.props.startEditStock(id, { name, quantity, numberInStock })
-        }
-        else if (name) {
-            this.props.startAddStock({ id, name, quantity, numberInStock })
-        }
-        this.props.history.push('/stock');
-        this.props.onClose()
+    handleAccept = queryFunction => () => {
+        const { edit } = this.props;
+        const { name, quantity, numberInStock, id } = this.state;
+        if (edit) queryFunction({ variables: { name, quantity, numberInStock, id } })
+        if (!edit) queryFunction({ variables: { name, quantity, numberInStock } })
     }
 
     render = () => {
-        const { classes } = this.props
+        const { classes, edit } = this.props
+
+        const addStockMutation = gql`
+        mutation createStock($name: String!, $quantity: Int!, $numberInStock:Int!) {
+            createStock(data: {
+                name: $name, 
+                quantity: $quantity,
+                numberInStock: $numberInStock
+            }) {
+                _id
+            }
+        }
+        `
+        const editStockMutation = gql`
+        mutation editStock($id: ID!, $name: String!, $quantity: Int!, $numberInStock:Int!) {
+            editStock(data: {
+                name: $name,
+                quantity: $quantity,
+                numberInStock: $numberInStock
+            }, id: $id) {
+                _id
+            }
+        }
+        `
+
         return (
-            <Modal
-                open
-                onClose={this.props.onClose}
-            >
-                <div style={getModalStyle()} className={classes.paper}>
-                    <Typography variant="h6" gutterBottom id="modal-title" align='center'>{this.props.edit ? 'Edit Stock' : 'Add New Stock'}</Typography>
-                    <form>
-                        <TextField
-                            label="Name"
-                            className={classes.textField}
-                            value={this.state.name}
-                            onChange={this.handleChange('name')}
-                            margin="normal"
-                            InputProps={{
-                                readOnly: this.props.edit,
-                            }}
-                            fullWidth
-                            required
-                            autoFocus={!this.props.edit}
-                            error={!this.state.name}
-                        />
-                        <TextField
-                            label="Quantity"
-                            className={classes.textField}
-                            value={this.state.quantity}
-                            onChange={this.handleChange('quantity')}
-                            margin="normal"
-                            type="number"
-                            autoFocus={this.props.edit}
-                            fullWidth
-                            required
-                        />
-                        <TextField
-                            label="Number in Stock"
-                            className={classes.textField}
-                            value={this.state.numberInStock}
-                            onChange={this.handleChange('numberInStock')}
-                            margin="normal"
-                            type="number"
-                            fullWidth
-                            required
-                        />
-                        <Button
-                            onClick={this.handleAccept}
-                            color='primary'
-                            variant='contained'
-                            fullWidth
-                        >
-                            Accept</Button>
-                    </form>
-                </div>
-            </Modal>
+            <Mutation
+                mutation={edit ? editStockMutation : addStockMutation}
+                onCompleted={() => {
+                    this.props.history.push('/stock');
+                    this.props.onClose();
+                }}>
+                {(post, { error }) => (
+                    <Modal
+                        open
+                        onClose={this.props.onClose}
+                    >
+                        <div style={getModalStyle()} className={classes.paper}>
+                            <Typography variant="h6" gutterBottom id="modal-title" align='center'>{this.props.edit ? 'Edit Stock' : 'Add New Stock'}</Typography>
+                            {error && <Typography variant="body1" color="error" id="modal-title" align='center'>{error.message}</Typography>}
+                            <form>
+                                <TextField
+                                    label="Name"
+                                    className={classes.textField}
+                                    value={this.state.name}
+                                    onChange={this.handleChange('name')}
+                                    margin="normal"
+                                    InputProps={{
+                                        readOnly: this.props.edit,
+                                    }}
+                                    fullWidth
+                                    required
+                                    autoFocus={!this.props.edit}
+                                    error={!this.state.name}
+                                />
+                                <TextField
+                                    label="Quantity"
+                                    className={classes.textField}
+                                    value={this.state.quantity}
+                                    onChange={this.handleChange('quantity')}
+                                    margin="normal"
+                                    type="number"
+                                    autoFocus={this.props.edit}
+                                    fullWidth
+                                    required
+                                />
+                                <TextField
+                                    label="Number in Stock"
+                                    className={classes.textField}
+                                    value={this.state.numberInStock}
+                                    onChange={this.handleChange('numberInStock')}
+                                    margin="normal"
+                                    type="number"
+                                    fullWidth
+                                    required
+                                />
+                                <Button
+                                    onClick={this.handleAccept(post)}
+                                    color='primary'
+                                    variant='contained'
+                                    fullWidth
+                                >
+                                    Accept</Button>
+                            </form>
+                        </div>
+                    </Modal>
+                )}
+            </Mutation>
         )
     }
 }
 
-const mapDispatchToProps = dispatch => ({
-    startAddStock: stock => dispatch(startAddStock(stock)),
-    startEditStock: (id, stock) => dispatch(startEditStock(id, stock))
-})
-
-export default connect(undefined, mapDispatchToProps)(withStyles(styles)(CreateStockModal));
+export default withStyles(styles)(CreateStockModal);

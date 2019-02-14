@@ -10,12 +10,11 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import gql from 'graphql-tag';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { startLogin } from '../actions/auth';
+import { Mutation } from 'react-apollo';
 
 
-startLogin
 const styles = theme => ({
     root: {
         color: '#576271'
@@ -70,12 +69,28 @@ class LoginPage extends Component {
         this.setState(state => ({ showPassword: !state.showPassword }))
     }
 
-    handleSubmit = () => {
-        this.props.startLogin({ username: this.state.username, password: this.state.password })
-    }
-
     render() {
         const { classes } = this.props
+        const { username, password } = this.state
+
+        const loginMutation = gql`
+        mutation login($username: String!, $password: String!) {
+            login(username: $username, password: $password) {
+                _id
+                name
+                username
+            }
+        }
+        `
+
+        const getUserQuery = gql`
+        {
+            currentUser {
+                _id
+            }
+        }
+        `
+
         return (
             <Grid container className={classes.item} alignItems='center'>
                 <Grid item xs={8}>
@@ -117,7 +132,18 @@ class LoginPage extends Component {
                                             />
                                         </FormControl>
                                         <Button variant='text' color='primary' className={classes.forgottenPassword}>Forgot password?</Button>
-                                        <Button variant='contained' color='primary' fullWidth className={classes.submitButton} onClick={this.handleSubmit}>Submit</Button>
+                                        <Mutation
+                                            mutation={loginMutation}
+                                            update={(cache, { data: { login } }) => {
+                                                cache.writeQuery({
+                                                    query: getUserQuery,
+                                                    data: { currentUser: login }
+                                                })
+                                            }}
+                                            onCompleted={() => this.props.history.push('/dashboard')}>
+                                            {(login) =>
+                                                <Button variant='contained' color='primary' fullWidth className={classes.submitButton} onClick={() => { login({ variables: { username, password } }) }}>Submit</Button>}
+                                        </Mutation>
                                     </form>
                                 </div>
                             </Grid>
@@ -132,8 +158,4 @@ class LoginPage extends Component {
     }
 }
 
-const mapDispatchToProps = dispatch => ({
-    startLogin: user => dispatch(startLogin(user))
-})
-
-export default connect(undefined, mapDispatchToProps)(withStyles(styles)(LoginPage));
+export default withStyles(styles)(LoginPage);

@@ -17,10 +17,10 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import ReportIcon from '@material-ui/icons/Description';
 import SearchIcon from '@material-ui/icons/Search';
 import StoreIcon from '@material-ui/icons/Store';
+import gql from 'graphql-tag';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { Mutation } from 'react-apollo';
 import { Link } from 'react-router-dom';
-import { startLogout } from '../actions/auth';
 import CreateStockModal from './CreateStockModal';
 
 const drawerWidth = 240;
@@ -118,6 +118,14 @@ class SideDrawer extends Component {
             <ReportIcon />
         ]
 
+        const logOutQuery = gql`
+        mutation logout {
+            logout {
+                _id
+            }
+        }
+        `
+
         return (
             <div>
                 <CssBaseline />
@@ -141,7 +149,13 @@ class SideDrawer extends Component {
                         </div>
                         <div className={classes.grow} />
                         <Button variant='outlined' color='secondary' onClick={this.handleOpen} className={classes.stockButton}>New Stock</Button>
-                        <Button variant='outlined' color='secondary' onClick={this.props.startLogout} className={classes.stockButton}>Log out</Button>
+                        <Mutation
+                            ignoreResults
+                            mutation={logOutQuery}>
+                            {(logout, {client}) => 
+                                <Button variant='outlined' color='secondary' onClick={() => logout().then(client.resetStore())} className={classes.stockButton}>Log out</Button>
+                            }
+                        </Mutation>
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -167,11 +181,4 @@ class SideDrawer extends Component {
         );
     }
 }
-
-const mapDispatchToProps = dispatch => ({
-    startLogout: () => dispatch(startLogout())
-})
-
-// const mapStateToProps = ({ user }) => ({ user })
-
-export default connect(undefined, mapDispatchToProps)(withStyles(styles)(SideDrawer));
+export default withStyles(styles)(SideDrawer);
