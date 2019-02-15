@@ -1,11 +1,11 @@
-import { Badge, Button, CssBaseline, Divider, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from "@material-ui/core";
-import gql from "graphql-tag";
+import { Badge, Button, CircularProgress, CssBaseline, Divider, Grid, Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from "@material-ui/core";
+import moment from "moment";
 import React from 'react';
 import { Query } from "react-apollo";
+import { LOAD_REQUISITIONS_QUERY } from "../Queries/Queries";
 import CreateRequisitionModal from "./CreateRequisitionModal";
 import Drawer from "./Drawer";
 import RequisitionTableRow from "./RequisitionTableRow";
-import moment from "moment";
 
 
 const styles = theme => ({
@@ -76,19 +76,6 @@ class RequistionsPage extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const loadRequisitionsQuery = gql`
-        {
-            requisitions {
-                _id
-                name
-                role
-                returnDate
-                item {
-                    name
-                }
-            }
-        }
-        `
 
         return (
             <div className={classes.root}>
@@ -122,10 +109,10 @@ class RequistionsPage extends React.Component {
                         </Grid>
                         <Divider variant='middle' />
                         <div className={classes.table}>
-                            <Query query={loadRequisitionsQuery}>
-                                {({ load, error, data }) => {
-                                    if (load) return <p>Loading...</p>
-                                    if (error) return <p>Error occured</p>
+                            <Query query={LOAD_REQUISITIONS_QUERY}>
+                                {({ loading, error, data }) => {
+                                    if (loading) return <CircularProgress />
+                                    if (error) return <p>{error.message}</p>
 
                                     return (
                                         <Table padding='dense'>
@@ -139,7 +126,7 @@ class RequistionsPage extends React.Component {
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                
+
                                                 {data.requisitions.map(row => (
                                                     <RequisitionTableRow
                                                         key={row._id}
@@ -147,7 +134,7 @@ class RequistionsPage extends React.Component {
                                                         name={row.name}
                                                         role={row.role}
                                                         item={row.item.name}
-                                                        returnDate = {
+                                                        returnDate={
                                                             moment(row.returnDate, "YYYY-MM-DD").format("Do MMMM, YYYY")
                                                         }
                                                         handleEdit={this.handleEdit} />

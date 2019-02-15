@@ -1,8 +1,8 @@
 import { CircularProgress, CssBaseline, Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import gql from 'graphql-tag';
 import React, { Component } from 'react';
 import { Query } from 'react-apollo';
+import { LOAD_STOCKS_QUERY } from '../Queries/Queries';
 import Drawer from './Drawer';
 import Stock from './Stock';
 
@@ -49,16 +49,6 @@ class StockPage extends Component {
 
     render = () => {
         const { classes } = this.props
-        const loadStocksQuery = gql`
-        {
-            stocks {
-                _id
-                name
-                quantity
-                numberInStock
-            }
-        }
-        `
 
         return (
             <div className={classes.root}>
@@ -66,7 +56,7 @@ class StockPage extends Component {
                 <Drawer history={this.props.history} />
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    <Query query={loadStocksQuery}>
+                    <Query query={LOAD_STOCKS_QUERY}>
                         {({ loading, error, data }) => {
                             if (loading) return <CircularProgress className={classes.progress} />
                             if (error) return <p>Error occured</p>

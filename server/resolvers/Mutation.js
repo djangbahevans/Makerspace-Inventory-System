@@ -7,11 +7,11 @@ const moment = require('moment')
 
 
 const Mutation = {
-    login: async (parent, { password, username }, { req, res }, info) => {
+    login: async (parent, { password, username }, { req }, info) => {
         return new Promise((resolve, reject) => {
             passport.authenticate('local', (err, user) => {
                 if (err) reject(err);
-                if (!user) reject('Invalid credentials.');
+                if (!user) reject('Invalid username or password');
 
                 req.login(user, () => resolve(user));
             })({ body: { username, password } });
@@ -69,6 +69,7 @@ const Mutation = {
     },
     createRequisition: async (parent, args, ctx, info) => {
         let { name, role, item, returnDate } = args.data;
+        console.log(requisition.returnDate);
 
         // return date string in format YYYY-MM-DD;
         returnDate = moment(returnDate, "YYYY-MM-DD").toDate()
@@ -94,7 +95,7 @@ const Mutation = {
         await stock.save();
 
         requisition.returnDate = moment(returnDate).format("YYYY-MM-DD")
-
+        console.log(requisition.returnDate);
         return requisition;
     },
     editRequisition: async (parent, { id, data }, ctx, info) => {

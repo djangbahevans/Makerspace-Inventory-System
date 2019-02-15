@@ -1,9 +1,9 @@
 import { Button, Modal, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import gql from 'graphql-tag';
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
 import capitalizeWords from '../helpers/capitalizeWords';
+import { ADD_STOCK_MUTATION, EDIT_STOCK_MUTATION } from '../Queries/Queries';
 
 
 function getModalStyle() {
@@ -66,32 +66,9 @@ class CreateStockModal extends Component {
     render = () => {
         const { classes, edit } = this.props
 
-        const addStockMutation = gql`
-        mutation createStock($name: String!, $quantity: Int!, $numberInStock:Int!) {
-            createStock(data: {
-                name: $name, 
-                quantity: $quantity,
-                numberInStock: $numberInStock
-            }) {
-                _id
-            }
-        }
-        `
-        const editStockMutation = gql`
-        mutation editStock($id: ID!, $name: String!, $quantity: Int!, $numberInStock:Int!) {
-            editStock(data: {
-                name: $name,
-                quantity: $quantity,
-                numberInStock: $numberInStock
-            }, id: $id) {
-                _id
-            }
-        }
-        `
-
         return (
             <Mutation
-                mutation={edit ? editStockMutation : addStockMutation}
+                mutation={edit ? EDIT_STOCK_MUTATION : ADD_STOCK_MUTATION}
                 onCompleted={() => {
                     this.props.history.push('/stock');
                     this.props.onClose();

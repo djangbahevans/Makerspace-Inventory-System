@@ -2,11 +2,11 @@ import { Badge, Button, CircularProgress, Grid, Paper, Table, TableBody, TableCe
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
 import { withStyles } from '@material-ui/core/styles';
-import gql from "graphql-tag";
+import moment from 'moment';
 import React, { Component } from 'react';
 import { Query } from 'react-apollo';
+import { LOAD_REQUISITIONS_QUERY, LOAD_STOCKS_QUERY } from '../Queries/Queries';
 import Drawer from './Drawer';
-import moment from 'moment';
 
 
 const styles = theme => ({
@@ -56,29 +56,6 @@ class DashboardPage extends Component {
 
     render() {
         const { classes } = this.props;
-        const loadRequisitionsQuery = gql`
-        {
-            requisitions {
-                _id
-                name
-                role
-                returnDate
-                item {
-                    name
-                }
-            }
-        }
-        `
-        const loadStocksQuery = gql`
-        {
-            stocks {
-                _id
-                name
-                quantity
-                numberInStock
-            }
-        }
-        `
 
         return (
             <div className={classes.root}>
@@ -101,7 +78,7 @@ class DashboardPage extends Component {
                                 </Grid>
                                 <Divider variant='middle' />
                                 <div className={classes.table}>
-                                    <Query query={loadRequisitionsQuery}>
+                                    <Query query={LOAD_REQUISITIONS_QUERY}>
                                         {({ loading, error, data }) => {
                                             if (loading) return <CircularProgress className={classes.progress} />
                                             if (error) return <p>{error.message}</p>
@@ -151,7 +128,7 @@ class DashboardPage extends Component {
                                 </Grid>
                                 <Divider variant='middle' />
                                 <div className={classes.table}>
-                                    <Query query={loadStocksQuery}>
+                                    <Query query={LOAD_STOCKS_QUERY}>
                                         {({ loading, error, data }) => {
                                             if (loading) return <CircularProgress className={classes.progress} />
                                             if (error) return <p>{error.message}</p>

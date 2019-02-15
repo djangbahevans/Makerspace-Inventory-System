@@ -11,10 +11,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const https = require('https')
-const requisition = require('./server/api/requisition');
-const stock = require('./server/api/stock');
 const logger = require('./server/logging/logger');
-const user = require('./server/api/user');
 const Mutation = require('./server/resolvers/Mutation');
 const Query = require('./server/resolvers/Query');
 const Requisition = require('./server/resolvers/Requisition');
@@ -50,11 +47,6 @@ app.use(session({
     cookie: { secure: true }
 }));
 require('./server/auth/auth')(app); // After app.use(sessions)
-
-// Routes
-app.use('/api/stock', stock);
-app.use('/api/requisition', requisition);
-app.use('/api/user', user);
 
 // Server
 const server = new ApolloServer({

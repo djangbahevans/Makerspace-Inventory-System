@@ -1,11 +1,11 @@
 import { Button, Modal, TextField, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import gql from 'graphql-tag';
 import moment from 'moment';
 import React from 'react';
 import { Mutation, Query } from 'react-apollo';
 import capitalizeWords from '../helpers/capitalizeWords';
 import AutoSuggest from './Autosuggest';
+import { EDIT_REQUISITION_MUTATION, CREATE_REQUISITION_MUTATION, GET_NAMES_QUERY } from '../Queries/Queries';
 
 
 function getModalStyle() {
@@ -72,53 +72,14 @@ class CreateRequisitionModal extends React.Component {
 
     render = () => {
         const { classes, edit } = this.props
-        const getNamesQuery = gql`
-        {
-            stocks {
-                name
-            }
-        }
-        `
-
-        const createRequisitionMutation = gql`
-            mutation createRequisitionMutation($name: String!, $item: ID!, $role: String, $returnDate: String!) {
-                createRequisition(data: {
-                    name: $name
-                    item: $item
-                    role: $role
-                    returnDate: $returnDate
-                }) {
-                    name
-                    item {
-                        name
-                    }
-                        role
-                        returnDate
-                }
-            }
-        `
-
-        const editRequisitionMutation = gql`
-            mutation editRequisitionMutation($id: ID!, $role: String, $returnDate: String!) {
-                editRequisition (data: {
-                    role: $role
-                    returnDate: $returnDate
-                },
-                id: $id) {
-                    _id
-                    name
-                    role
-                    item {
-                        name
-                    }
-                    returnDate
-                }
-            }
-        `
+        
 
         return (
             <Mutation
-                mutation={edit ? editRequisitionMutation : createRequisitionMutation}
+                mutation={edit ? EDIT_REQUISITION_MUTATION : CREATE_REQUISITION_MUTATION}
+                update={() => {
+
+                }}
                 onCompleted={this.props.onClose} >
                 {(post, { data, loading, error }) => (
                     <Modal
@@ -153,7 +114,7 @@ class CreateRequisitionModal extends React.Component {
                                     margin="normal"
                                     fullWidth
                                 />
-                                <Query query={getNamesQuery}>
+                                <Query query={GET_NAMES_QUERY}>
                                     {({ loading, error, data }) => {
                                         if (loading || error) return (
                                             <AutoSuggest

@@ -10,9 +10,9 @@ import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import gql from 'graphql-tag';
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
+import { GET_USER_QUERY, LOGIN_MUTATION } from '../Queries/Queries';
 
 
 const styles = theme => ({
@@ -73,24 +73,6 @@ class LoginPage extends Component {
         const { classes } = this.props
         const { username, password } = this.state
 
-        const loginMutation = gql`
-        mutation login($username: String!, $password: String!) {
-            login(username: $username, password: $password) {
-                _id
-                name
-                username
-            }
-        }
-        `
-
-        const getUserQuery = gql`
-        {
-            currentUser {
-                _id
-            }
-        }
-        `
-
         return (
             <Grid container className={classes.item} alignItems='center'>
                 <Grid item xs={8}>
@@ -133,10 +115,10 @@ class LoginPage extends Component {
                                         </FormControl>
                                         <Button variant='text' color='primary' className={classes.forgottenPassword}>Forgot password?</Button>
                                         <Mutation
-                                            mutation={loginMutation}
+                                            mutation={LOGIN_MUTATION}
                                             update={(cache, { data: { login } }) => {
                                                 cache.writeQuery({
-                                                    query: getUserQuery,
+                                                    query: GET_USER_QUERY,
                                                     data: { currentUser: login }
                                                 })
                                             }}

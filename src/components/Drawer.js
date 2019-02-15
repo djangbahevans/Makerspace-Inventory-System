@@ -17,10 +17,10 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import ReportIcon from '@material-ui/icons/Description';
 import SearchIcon from '@material-ui/icons/Search';
 import StoreIcon from '@material-ui/icons/Store';
-import gql from 'graphql-tag';
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
 import { Link } from 'react-router-dom';
+import { LOG_OUT_MUTATION } from '../Queries/Queries';
 import CreateStockModal from './CreateStockModal';
 
 const drawerWidth = 240;
@@ -118,14 +118,6 @@ class SideDrawer extends Component {
             <ReportIcon />
         ]
 
-        const logOutQuery = gql`
-        mutation logout {
-            logout {
-                _id
-            }
-        }
-        `
-
         return (
             <div>
                 <CssBaseline />
@@ -151,7 +143,7 @@ class SideDrawer extends Component {
                         <Button variant='outlined' color='secondary' onClick={this.handleOpen} className={classes.stockButton}>New Stock</Button>
                         <Mutation
                             ignoreResults
-                            mutation={logOutQuery}>
+                            mutation={LOG_OUT_MUTATION}>
                             {(logout, {client}) => 
                                 <Button variant='outlined' color='secondary' onClick={() => logout().then(client.resetStore())} className={classes.stockButton}>Log out</Button>
                             }

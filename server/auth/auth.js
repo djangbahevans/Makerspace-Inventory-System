@@ -14,7 +14,7 @@ module.exports = app => {
             User.findOne({ username }, function (err, user) {
                 if (err) return done(err);
                 if (!user) return done(null, false);
-                if (!user.verifyPassword(password)) return done(null, false, { msg: 'Invalid email or password.' });
+                if (!user.verifyPassword(password)) return done(null, false, { msg: 'Invalid username or password.' });
                 return done(null, user);
             });
         }
