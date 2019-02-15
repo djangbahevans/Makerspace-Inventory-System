@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
 import capitalizeWords from '../helpers/capitalizeWords';
-import { ADD_STOCK_MUTATION, EDIT_STOCK_MUTATION } from '../Queries/Queries';
+import { ADD_STOCK_MUTATION, EDIT_STOCK_MUTATION, LOAD_STOCKS_QUERY } from '../Queries/Queries';
 
 
 function getModalStyle() {
@@ -40,6 +40,8 @@ class CreateStockModal extends Component {
     }
 
     handleChange = name => event => {
+        if (name == 'name') return this.setState({ name: capitalizeWords(event.target.value) });
+
         const num = Number.parseInt(event.target.value);
         if (name === 'quantity') {
             if (num != event.target.value) return; // Must be an integer
@@ -50,7 +52,7 @@ class CreateStockModal extends Component {
             if (num != event.target.value) return; // Must be an integer
             if (isNaN(num) || num < 0 || num > this.state.quantity) return; // Cannot be empty or greater than quantity
         }
-        if (name == 'name') return this.setState({ name: capitalizeWords(event.target.value) });
+
         this.setState({
             [name]: event.target.value
         });
@@ -58,8 +60,12 @@ class CreateStockModal extends Component {
 
     handleAccept = queryFunction => () => {
         const { edit } = this.props;
-        const { name, quantity, numberInStock, id } = this.state;
-        if (edit) queryFunction({ variables: { name, quantity, numberInStock, id } })
+        let { name, quantity, numberInStock, id } = this.state;
+
+        quantity = parseInt(quantity);
+        numberInStock = parseInt(numberInStock);
+
+        if (edit) queryFunction({ variables: { quantity, numberInStock, id } })
         if (!edit) queryFunction({ variables: { name, quantity, numberInStock } })
     }
 
@@ -69,6 +75,17 @@ class CreateStockModal extends Component {
         return (
             <Mutation
                 mutation={edit ? EDIT_STOCK_MUTATION : ADD_STOCK_MUTATION}
+                update={(cache, { data: { editStock, createStock } }) => {
+                    const { stocks } = cache.readQuery({ query: LOAD_STOCKS_QUERY });
+                    if (createStock) cache.writeQuery({
+                        query: LOAD_STOCKS_QUERY,
+                        data: stocks.push(createStock)
+                    });
+                    if (editStock) cache.writeQuery({
+                        query: LOAD_STOCKS_QUERY,
+                        data: stocks.map(stock => stock._id === editStock._id ? editStock : stock)
+                    })
+                }}
                 onCompleted={() => {
                     this.props.history.push('/stock');
                     this.props.onClose();

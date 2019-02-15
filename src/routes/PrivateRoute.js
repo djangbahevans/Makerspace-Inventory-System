@@ -1,23 +1,15 @@
-import gql from 'graphql-tag';
 import React from 'react';
 import { Query } from 'react-apollo';
 import { Redirect, Route } from 'react-router-dom';
+import { GET_USER_QUERY } from '../Queries/Queries';
 
-
-const getUserQuery = gql`
-{
-    currentUser {
-        _id
-    }
-}
-`
 
 export const PrivateRoute = ({
     component: Component,
     ...rest
 }) => (
         <Route {...rest} component={props => (
-            <Query query={getUserQuery}>
+            <Query query={GET_USER_QUERY}>
                 {({ data }) =>
                 data.currentUser ? (
                         <Component {...props} />

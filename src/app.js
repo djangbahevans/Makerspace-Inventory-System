@@ -1,8 +1,9 @@
 
-import ApolloClient, { gql } from "apollo-boost";
+import ApolloClient from "apollo-boost";
 import React from 'react';
 import { ApolloProvider } from 'react-apollo';
 import ReactDOM from 'react-dom';
+import { GET_USER_QUERY } from "./Queries/Queries";
 import AppRouter from './routes/AppRouter';
 // import { MuiThemeProvider } from '@material-ui/core/styles';
 // import theme from './theme/theme';
@@ -10,16 +11,8 @@ import AppRouter from './routes/AppRouter';
 
 const client = new ApolloClient();
 
-const getUserQuery = gql`
-{
-    currentUser {
-        _id
-    }
-}
-`
-
 client.query({
-    query: getUserQuery
+    query: GET_USER_QUERY
 }).then(() => ReactDOM.render(
     <ApolloProvider client={client}>
         <AppRouter />

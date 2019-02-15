@@ -3,7 +3,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
-import { DELETE_REQUISITION_MUTATION } from '../Queries/Queries';
+import { DELETE_REQUISITION_MUTATION, LOAD_REQUISITIONS_QUERY, LOAD_STOCKS_QUERY } from '../Queries/Queries';
 
 
 class RequisitionTableRow extends Component {
@@ -24,7 +24,26 @@ class RequisitionTableRow extends Component {
                     <IconButton aria-label="Edit" onClick={this.props.handleEdit(this.props)} onClose={this.props.onClose}>
                         <EditIcon />
                     </IconButton>
-                    <Mutation mutation={DELETE_REQUISITION_MUTATION}>
+                    <Mutation
+                        update={(cache, { data: { deleteRequisition } }) => {
+                            const {requisitions} = cache.readQuery({ query: LOAD_REQUISITIONS_QUERY });
+                            const { stocks } = cache.readQuery({ query: LOAD_STOCKS_QUERY })
+                            const index = requisitions.findIndex(requisition => requisition._id === deleteRequisition._id)
+
+                            cache.writeQuery({
+                                query: LOAD_STOCKS_QUERY,
+                                data: stocks.map(stock => {
+                                    if (stock._id !== deleteRequisition.item._id) return stock;
+                                    ++stock.numberInStock
+                                    return stock;
+                                })
+                            })
+                            cache.writeQuery({
+                                query: LOAD_REQUISITIONS_QUERY,
+                                data: requisitions.splice(index, 1)
+                            })
+                        }}
+                        mutation={DELETE_REQUISITION_MUTATION}>
                         {(deleteRequisition, { data }) => (
                             <IconButton aria-label="Delete" onClick={() => deleteRequisition({ variables: { id } })}>
                                 <DeleteIcon />

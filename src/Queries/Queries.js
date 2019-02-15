@@ -11,10 +11,10 @@ export const EDIT_REQUISITION_MUTATION = gql `
                     _id
                     name
                     role
+                    returnDate
                     item {
                         name
                     }
-                    returnDate
                 }
             }
         `
@@ -27,12 +27,14 @@ export const CREATE_REQUISITION_MUTATION = gql `
                     role: $role
                     returnDate: $returnDate
                 }) {
+                    _id
                     name
+                    role
+                    returnDate
                     item {
+                        _id
                         name
                     }
-                        role
-                        returnDate
                 }
             }
         `
@@ -67,18 +69,23 @@ export const ADD_STOCK_MUTATION = gql `
                 numberInStock: $numberInStock
             }) {
                 _id
+                name
+                quantity
+                numberInStock
             }
         }
         `
 
 export const EDIT_STOCK_MUTATION = gql `
-        mutation editStock($id: ID!, $name: String!, $quantity: Int!, $numberInStock:Int!) {
+        mutation editStock($id: ID!, $quantity: Int!, $numberInStock:Int!) {
             editStock(data: {
-                name: $name,
                 quantity: $quantity,
                 numberInStock: $numberInStock
             }, id: $id) {
                 _id
+                name
+                quantity
+                numberInStock
             }
         }
         `
@@ -123,6 +130,10 @@ export const DELETE_REQUISITION_MUTATION = gql `
         mutation deleteRequisition($id: ID!) {
             deleteRequisition(id: $id) {
                 _id
+                item {
+                    _id
+                    name
+                }
             }
         }
     `

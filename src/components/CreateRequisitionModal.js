@@ -5,7 +5,7 @@ import React from 'react';
 import { Mutation, Query } from 'react-apollo';
 import capitalizeWords from '../helpers/capitalizeWords';
 import AutoSuggest from './Autosuggest';
-import { EDIT_REQUISITION_MUTATION, CREATE_REQUISITION_MUTATION, GET_NAMES_QUERY } from '../Queries/Queries';
+import { EDIT_REQUISITION_MUTATION, CREATE_REQUISITION_MUTATION, GET_NAMES_QUERY, LOAD_REQUISITIONS_QUERY, LOAD_STOCKS_QUERY } from '../Queries/Queries';
 
 
 function getModalStyle() {
@@ -72,13 +72,35 @@ class CreateRequisitionModal extends React.Component {
 
     render = () => {
         const { classes, edit } = this.props
-        
+
 
         return (
             <Mutation
                 mutation={edit ? EDIT_REQUISITION_MUTATION : CREATE_REQUISITION_MUTATION}
-                update={() => {
+                update={(cache, { data: { editRequisition, createRequisition } }) => {
+                    const { requisitions } = cache.readQuery({ query: LOAD_REQUISITIONS_QUERY });
+                    
+                    if (createRequisition) {
+                        const { stocks } = cache.readQuery({ query: LOAD_STOCKS_QUERY })
 
+                        cache.writeQuery({
+                            query: LOAD_STOCKS_QUERY,
+                            data: stocks.map(stock => {
+                                if (stock._id !== createRequisition.item._id) return stock;
+                                --stock.numberInStock
+                                return stock;
+                            })
+                        })
+
+                        cache.writeQuery({
+                            query: LOAD_REQUISITIONS_QUERY,
+                            data: requisitions.push(createRequisition)
+                        })
+                    }
+                    if (editRequisition) cache.writeQuery({
+                        query: LOAD_REQUISITIONS_QUERY,
+                        data: requisitions.map(requisition => requisition._id === editRequisition._id ? editRequisition : requisition)
+                    })
                 }}
                 onCompleted={this.props.onClose} >
                 {(post, { data, loading, error }) => (

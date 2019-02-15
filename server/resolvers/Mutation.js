@@ -69,7 +69,6 @@ const Mutation = {
     },
     createRequisition: async (parent, args, ctx, info) => {
         let { name, role, item, returnDate } = args.data;
-        console.log(requisition.returnDate);
 
         // return date string in format YYYY-MM-DD;
         returnDate = moment(returnDate, "YYYY-MM-DD").toDate()
@@ -93,10 +92,14 @@ const Mutation = {
 
         stock.requisitionHistory.push(requisition._id);
         await stock.save();
-
-        requisition.returnDate = moment(returnDate).format("YYYY-MM-DD")
-        console.log(requisition.returnDate);
-        return requisition;
+        
+        return {
+            _id: requisition._id,
+            name,
+            role,
+            item: stock,
+            returnDate: moment(returnDate).format("YYYY-MM-DD")
+        };
     },
     editRequisition: async (parent, { id, data }, ctx, info) => {
         const { role, item, returnDate, actualReturnDate } = data;
