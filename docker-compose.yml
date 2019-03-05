@@ -1,0 +1,19 @@
+version: "3"
+services:
+  web:
+    environment:
+      - NODE_ENV=production
+    container_name: mis
+    restart: always
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/usr/mis
+    links:
+      - mongodb
+  mongodb:
+    container_name: mongo
+    image: mongo
+    ports:
+      - "27017:27017"

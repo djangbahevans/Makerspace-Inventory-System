@@ -5,7 +5,7 @@ import React from 'react';
 import { Mutation, Query } from 'react-apollo';
 import capitalizeWords from '../helpers/capitalizeWords';
 import AutoSuggest from './Autosuggest';
-import { EDIT_REQUISITION_MUTATION, CREATE_REQUISITION_MUTATION, GET_NAMES_QUERY, LOAD_REQUISITIONS_QUERY, LOAD_STOCKS_QUERY } from '../Queries/Queries';
+import { EDIT_REQUISITION_MUTATION, CREATE_REQUISITION_MUTATION, GET_NAMES_QUERY, LOAD_REQUISITIONS_QUERY, LOAD_STOCKS_QUERY } from '../queries/Queries';
 
 
 function getModalStyle() {

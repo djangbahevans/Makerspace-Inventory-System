@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core';
+import { Button, IconButton, Tooltip } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Divider from '@material-ui/core/Divider';
@@ -11,16 +11,18 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import Toolbar from '@material-ui/core/Toolbar';
-import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
-import CalenderIcon from '@material-ui/icons/CalendarToday';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import ReportIcon from '@material-ui/icons/Description';
-import SearchIcon from '@material-ui/icons/Search';
-import StoreIcon from '@material-ui/icons/Store';
+import AddShoppingCart from '@material-ui/icons/AddShoppingCart';
+import Calender from '@material-ui/icons/CalendarToday';
+import Dashboard from '@material-ui/icons/Dashboard';
+import Report from '@material-ui/icons/Description';
+import Search from '@material-ui/icons/Search';
+import Store from '@material-ui/icons/Store';
+import ExitToApp from "@material-ui/icons/ExitToApp";
+import LibraryAdd from "@material-ui/icons/LibraryAdd"
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
 import { Link } from 'react-router-dom';
-import { LOG_OUT_MUTATION } from '../Queries/Queries';
+import { LOG_OUT_MUTATION } from '../queries/Queries';
 import CreateStockModal from './CreateStockModal';
 
 const drawerWidth = 240;
@@ -87,6 +89,9 @@ const styles = theme => ({
     },
     activeNav: {
         // backgroundColor: 'blue'
+    },
+    stockButton: {
+        color: "#fff"
     }
 })
 
@@ -111,11 +116,11 @@ class SideDrawer extends Component {
         const { classes } = this.props;
         const pathname = this.props.history.location.pathname.toLowerCase();
         const icons = [
-            <DashboardIcon />,
-            <AddShoppingCartIcon />,
-            <StoreIcon />,
-            <CalenderIcon />,
-            <ReportIcon />
+            <Dashboard />,
+            <AddShoppingCart />,
+            <Store />,
+            <Calender />,
+            <Report />
         ]
 
         return (
@@ -129,7 +134,7 @@ class SideDrawer extends Component {
                     <Toolbar>
                         <div className={classes.search}>
                             <div className={classes.searchIcon}>
-                                <SearchIcon />
+                                <Search />
                             </div>
                             <InputBase
                                 placeholder="Search for anything..."
@@ -140,12 +145,20 @@ class SideDrawer extends Component {
                             />
                         </div>
                         <div className={classes.grow} />
-                        <Button variant='outlined' color='secondary' onClick={this.handleOpen} className={classes.stockButton}>New Stock</Button>
+                        <Tooltip title="Add new stock">
+                            <IconButton variant='outlined' color='secondary' onClick={this.handleOpen} className={classes.stockButton}>
+                                <LibraryAdd />
+                            </IconButton>
+                        </Tooltip>
                         <Mutation
                             ignoreResults
                             mutation={LOG_OUT_MUTATION}>
-                            {(logout, {client}) => 
-                                <Button variant='outlined' color='secondary' onClick={() => logout().then(client.resetStore())} className={classes.stockButton}>Log out</Button>
+                            {(logout, { client }) =>
+                                <Tooltip title="Log Out">
+                                    <IconButton variant='outlined' onClick={() => logout().then(client.resetStore())} className={classes.stockButton}>
+                                        <ExitToApp />
+                                    </IconButton>
+                                </Tooltip>
                             }
                         </Mutation>
                     </Toolbar>

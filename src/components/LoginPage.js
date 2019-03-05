@@ -12,7 +12,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
-import { GET_USER_QUERY, LOGIN_MUTATION } from '../Queries/Queries';
+import { GET_USER_QUERY, LOGIN_MUTATION } from '../queries/Queries';
 
 
 const styles = theme => ({

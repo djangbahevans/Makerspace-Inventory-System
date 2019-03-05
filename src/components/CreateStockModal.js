@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
 import capitalizeWords from '../helpers/capitalizeWords';
-import { ADD_STOCK_MUTATION, EDIT_STOCK_MUTATION, LOAD_STOCKS_QUERY } from '../Queries/Queries';
+import { ADD_STOCK_MUTATION, EDIT_STOCK_MUTATION, LOAD_STOCKS_QUERY } from '../queries/Queries';
 
 
 function getModalStyle() {

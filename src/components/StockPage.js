@@ -2,7 +2,7 @@ import { CircularProgress, CssBaseline, Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import React, { Component } from 'react';
 import { Query } from 'react-apollo';
-import { LOAD_STOCKS_QUERY } from '../Queries/Queries';
+import { LOAD_STOCKS_QUERY } from '../queries/Queries';
 import Drawer from './Drawer';
 import Stock from './Stock';
 

@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import React, { Component } from 'react';
 import { Query } from 'react-apollo';
-import { LOAD_REQUISITIONS_QUERY, LOAD_STOCKS_QUERY } from '../Queries/Queries';
+import { LOAD_REQUISITIONS_QUERY, LOAD_STOCKS_QUERY } from '../queries/Queries';
 import Drawer from './Drawer';
 
 

@@ -3,7 +3,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import React, { Component } from 'react';
 import { Mutation } from 'react-apollo';
-import { DELETE_REQUISITION_MUTATION, LOAD_REQUISITIONS_QUERY, LOAD_STOCKS_QUERY } from '../Queries/Queries';
+import { DELETE_REQUISITION_MUTATION, LOAD_REQUISITIONS_QUERY, LOAD_STOCKS_QUERY } from '../queries/Queries';
 
 
 class RequisitionTableRow extends Component {

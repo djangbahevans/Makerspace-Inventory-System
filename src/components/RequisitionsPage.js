@@ -2,7 +2,7 @@ import { Badge, Button, CircularProgress, CssBaseline, Divider, Grid, Paper, Tab
 import moment from "moment";
 import React from 'react';
 import { Query } from "react-apollo";
-import { LOAD_REQUISITIONS_QUERY } from "../Queries/Queries";
+import { LOAD_REQUISITIONS_QUERY } from "../queries/Queries";
 import CreateRequisitionModal from "./CreateRequisitionModal";
 import Drawer from "./Drawer";
 import RequisitionTableRow from "./RequisitionTableRow";

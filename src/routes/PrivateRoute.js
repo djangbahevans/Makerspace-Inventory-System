@@ -1,7 +1,7 @@
 import React from 'react';
 import { Query } from 'react-apollo';
 import { Redirect, Route } from 'react-router-dom';
-import { GET_USER_QUERY } from '../Queries/Queries';
+import { GET_USER_QUERY } from '../queries/Queries';
 
 
 export const PrivateRoute = ({

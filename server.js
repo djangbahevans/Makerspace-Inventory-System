@@ -18,12 +18,14 @@ const Requisition = require('./server/resolvers/Requisition');
 const Stock = require('./server/resolvers/Stock');
 
 
+const PRODUCTION = process.env.NODE_ENV ? true : false;
+
 // Logging
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'express.log'), { flags: 'a' });
 app.use(morgan('combined', { stream: accessLogStream }));
 
 // Database Connection
-const URI = process.env.URI || "mongodb://localhost:27017/inventory"
+const URI = process.env.URI || "mongodb://mongo/inventory";
 mongoose.connect(URI, {
     useNewUrlParser: true
 })
@@ -61,7 +63,7 @@ const server = new ApolloServer({
     context: ({ req, res }) => {
         return { req, res };
     },
-    debug: true
+    debug: PRODUCTION
 });
 
 server.applyMiddleware({ app });
