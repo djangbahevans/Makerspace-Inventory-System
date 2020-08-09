@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs')
 
-module.exports = (data) => {
+module.exports = async (data) => {
     let {
         name,
         role,
