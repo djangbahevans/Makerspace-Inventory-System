@@ -34,10 +34,12 @@ app.use(morgan('combined', {
 }));
 
 // Database Connection
-const URI = process.env.URI || "mongodb://mongo/inventory";
+const URI = process.env.URI || "mongodb://localhost:27017/inventory";
 mongoose.connect(URI, {
-        useNewUrlParser: true
-    })
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true
+})
     .then(() => logger.info('Connected to  MongoDB'))
     .catch(() => {
         logger.info('Could not connect to MongoDB');
@@ -67,7 +69,7 @@ require('./server/auth/auth')(app); // After app.use(sessions)
 
 // Server
 const server = new ApolloServer({
-    typeDefs: gql `${fs.readFileSync(__dirname.concat('/server/schema/schema.graphql'), 'utf8')}`,
+    typeDefs: gql`${fs.readFileSync(__dirname.concat('/server/schema/schema.graphql'), 'utf8')}`,
     resolvers: {
         Mutation,
         Query,
@@ -100,7 +102,7 @@ app.use((req, res) => {
 });
 
 // Add default user if user does not exist
-User.find({},(err, res) => {
+User.find({}, (err, res) => {
     if (res.length === 0) createDefaultUser({
         name: 'admin',
         role: 'admin',
@@ -109,11 +111,12 @@ User.find({},(err, res) => {
     })
 });
 
-
 const PORT = process.env.PORT || 8080;
-https.createServer({
-    cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt')),
-    key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
-}, app).listen(PORT, () => {
-    logger.info(`Server running on port ${PORT}`);
-});
+https.createServer(
+    {
+        cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.crt')),
+        key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
+    },
+    app).listen(PORT, () => {
+        logger.info(`Server running on port ${PORT}`);
+    });
