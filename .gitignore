@@ -4,3 +4,5 @@
 **/bundle.js
 **.jpg
 **.log
+
+dist/*

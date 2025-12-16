@@ -1,4 +1,4 @@
 {
-    "connectionString": "mongodb://localhost:27017/inventory",
-    "LogLevel": "debug"
+  "connectionString": "mongodb://localhost:27017/inventory",
+  "LogLevel": "debug"
 }
