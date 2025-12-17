@@ -1,19 +1,16 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, ApolloLink, InMemoryCache } from "@apollo/client";
 import {
   CombinedGraphQLErrors,
   CombinedProtocolErrors,
 } from "@apollo/client/errors";
 import { ErrorLink } from "@apollo/client/link/error";
+import { HttpLink } from "@apollo/client/link/http";
 import { ApolloProvider } from "@apollo/client/react";
 import ReactDOM from "react-dom/client";
 import { GET_USER_QUERY } from "./queries/Queries";
 import AppRouter from "./routes/AppRouter";
 
-// import { MuiThemeProvider } from '@material-ui/core/styles';
-// import theme from './theme/theme';
-
-const client = new ApolloClient({
-  link: new ErrorLink(({ error }) => {
+const errorLink = new ErrorLink(({ error }) => {
     if (CombinedGraphQLErrors.is(error)) {
       error.errors.forEach(({ message, locations, path }) => {
         console.log(
@@ -31,7 +28,15 @@ const client = new ApolloClient({
     } else {
       console.error(`[Network error]: ${error}`);
     }
-  }),
+  });
+
+const httpLink = new HttpLink({
+  uri: "/graphql",
+  credentials: "same-origin",
+});
+
+const client = new ApolloClient({
+  link: ApolloLink.from([errorLink, httpLink]),
   cache: new InMemoryCache(),
 });
 
@@ -42,14 +47,16 @@ if (!rootEl) {
 
 const root = ReactDOM.createRoot(rootEl);
 
+root.render(
+  <ApolloProvider client={client}>
+    <AppRouter />
+  </ApolloProvider>,
+);
+
 client
   .query({
     query: GET_USER_QUERY,
   })
-  .then(() =>
-    root.render(
-      <ApolloProvider client={client}>
-        <AppRouter />
-      </ApolloProvider>,
-    ),
-  );
+  .catch(() => {
+    // Best-effort prefetch; app should still render if unauthenticated.
+  });
